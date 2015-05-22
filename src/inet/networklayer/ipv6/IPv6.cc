@@ -417,8 +417,9 @@ void IPv6::routeMulticastPacket(IPv6Datagram *datagram, const InterfaceEntry *de
 
     // if received from the network...
     if (fromIE != nullptr) {
+        ASSERT(!fromHL);
         // deliver locally
-        if (rt->isLocalAddress(destAddr)) {
+        if (rt->isLocalAddress(destAddr) || fromIE->ipv6Data()->isMemberOfMulticastGroup(destAddr)) {
             EV_INFO << "local delivery of multicast packet\n";
             numLocalDeliver++;
             localDeliver(datagram->dup());
