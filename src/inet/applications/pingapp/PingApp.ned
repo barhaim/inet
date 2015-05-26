@@ -18,8 +18,7 @@
 
 package inet.applications.pingapp;
 
-import inet.applications.contract.IPingApp;
-
+import inet.applications.contract.IApp;
 
 //
 // Generates ping requests and calculates the packet loss and round trip
@@ -44,7 +43,7 @@ import inet.applications.contract.IPingApp;
 //
 // @see ~PingPayload, ~ICMP, ~ICMPv6
 //
-simple PingApp like IPingApp
+simple PingApp like IApp
 {
     parameters:
         string destAddr = default(""); // destination address
@@ -68,7 +67,7 @@ simple PingApp like IPingApp
         @statistic[pingTxSeq](title="ping tx seq"; record=count,vector; interpolationmode=none);
         @statistic[pingRxSeq](title="ping rx seq"; record=count,vector; interpolationmode=none);
     gates:
-        input pingIn @labels(PingPayload/up);
-        output pingOut @labels(PingPayload/down);
+        input socketIn @labels(ITransportPacket/up);
+        output socketOut @labels(ITransportPacket/down);
 }
 
