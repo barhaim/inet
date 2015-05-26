@@ -18,20 +18,30 @@
 #ifndef __INET_IMACPROTOCOLCONTROLINFO_H
 #define __INET_IMACPROTOCOLCONTROLINFO_H
 
+#include "inet/applications/contract/ISocketControlInfo.h"
 #include "inet/linklayer/common/MACAddress.h"
 
 namespace inet {
 
-class INET_API IMACProtocolControlInfo
+class INET_API ILinkLayerControlInfo
+{
+  public:
+    virtual ~ILinkLayerControlInfo() {}
+    virtual int getMACProtocol() const = 0;
+};
+
+class INET_API IMACProtocolControlInfo : public ILinkLayerControlInfo, public ISocketControlInfo
 {
   public:
     virtual ~IMACProtocolControlInfo() {}
+    virtual int getNetworkProtocol() const = 0;
+    virtual void setNetworkProtocol(int id) = 0;
     virtual MACAddress getSourceAddress() const = 0;
     virtual void setSourceAddress(const MACAddress& address) = 0;
     virtual MACAddress getDestinationAddress() const = 0;
     virtual void setDestinationAddress(const MACAddress& address) = 0;
     virtual int getInterfaceId() const = 0;
-    virtual void setInterfaceId(int interfaceId) = 0;
+    virtual void setInterfaceId(int id) = 0;
 };
 
 } // namespace inet

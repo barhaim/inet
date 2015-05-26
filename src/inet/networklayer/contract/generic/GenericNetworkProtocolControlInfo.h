@@ -21,6 +21,7 @@
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/networklayer/contract/generic/GenericNetworkProtocolControlInfo_m.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
+#include "inet/linklayer/common/Ieee802Ctrl.h"
 
 namespace inet {
 
@@ -35,6 +36,9 @@ class INET_API GenericNetworkProtocolControlInfo : public GenericNetworkProtocol
     GenericNetworkProtocolControlInfo& operator=(const GenericNetworkProtocolControlInfo& other) { if (this == &other) return *this; GenericNetworkProtocolControlInfo_Base::operator=(other); copy(other); return *this; }
     virtual GenericNetworkProtocolControlInfo *dup() const override { return new GenericNetworkProtocolControlInfo(*this); }
 
+    virtual int getNetworkProtocol() const override { return ETHERTYPE_INET_GENERIC; }
+    virtual int getSocketId() const override { return GenericNetworkProtocolControlInfo_Base::getSocketId(); }
+    virtual void setSocketId(int socketId) override { GenericNetworkProtocolControlInfo_Base::setSocketId(socketId); }
     virtual short getTransportProtocol() const override { return GenericNetworkProtocolControlInfo_Base::getProtocol(); }
     virtual void setTransportProtocol(short protocol) override { GenericNetworkProtocolControlInfo_Base::setProtocol(protocol); }
     virtual L3Address getSourceAddress() const override { return GenericNetworkProtocolControlInfo_Base::_getSourceAddress(); }

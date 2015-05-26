@@ -21,6 +21,7 @@
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/networklayer/common/SimpleNetworkProtocolControlInfo_m.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
+#include "inet/linklayer/common/Ieee802Ctrl.h"
 
 namespace inet {
 
@@ -35,6 +36,9 @@ class INET_API SimpleNetworkProtocolControlInfo : public SimpleNetworkProtocolCo
     SimpleNetworkProtocolControlInfo& operator=(const SimpleNetworkProtocolControlInfo& other) { if (this == &other) return *this; SimpleNetworkProtocolControlInfo_Base::operator=(other); copy(other); return *this; }
     virtual SimpleNetworkProtocolControlInfo *dup() const override { return new SimpleNetworkProtocolControlInfo(*this); }
 
+    virtual int getNetworkProtocol() const override { return ETHERTYPE_INET_GENERIC; }
+    virtual int getSocketId() const override { return SimpleNetworkProtocolControlInfo_Base::getProtocol(); }
+    virtual void setSocketId(int socketId) override { SimpleNetworkProtocolControlInfo_Base::setSocketId(socketId); }
     virtual short getTransportProtocol() const override { return SimpleNetworkProtocolControlInfo_Base::getProtocol(); }
     virtual void setTransportProtocol(short protocol) override { SimpleNetworkProtocolControlInfo_Base::setProtocol(protocol); }
     virtual L3Address getSourceAddress() const override { return SimpleNetworkProtocolControlInfo_Base::_getSourceAddress(); }

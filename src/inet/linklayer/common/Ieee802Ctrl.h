@@ -37,12 +37,17 @@ class INET_API Ieee802Ctrl : public Ieee802Ctrl_Base, public IMACProtocolControl
 
     virtual Ieee802Ctrl *dup() const override { return new Ieee802Ctrl(*this); }
 
+    virtual int getMACProtocol() const override { return -1; }
     virtual MACAddress getSourceAddress() const override { return getSrc(); }
     virtual void setSourceAddress(const MACAddress& address) override { setSrc(address); }
     virtual MACAddress getDestinationAddress() const override { return getDest(); }
     virtual void setDestinationAddress(const MACAddress& address) override { setDest(address); };
+    virtual int getNetworkProtocol() const override { return getEtherType(); }
+    virtual void setNetworkProtocol(int protocolId) override { setEtherType(protocolId); }
     virtual int getInterfaceId() const override { return Ieee802Ctrl_Base::getInterfaceId(); }
     virtual void setInterfaceId(int interfaceId) override { Ieee802Ctrl_Base::setInterfaceId(interfaceId); }
+    virtual int getSocketId() const override { return Ieee802Ctrl_Base::getSocketId(); }
+    virtual void setSocketId(int socketId) override { Ieee802Ctrl_Base::setSocketId(socketId); }
 };
 
 } // namespace inet
