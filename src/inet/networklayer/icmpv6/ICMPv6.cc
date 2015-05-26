@@ -30,8 +30,6 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeStatus.h"
 
-#include "inet/applications/pingapp/PingPayload_m.h"
-
 namespace inet {
 
 Define_Module(ICMPv6);
@@ -57,12 +55,6 @@ void ICMPv6::handleMessage(cMessage *msg)
     if (msg->getArrivalGate()->isName("ipv6In")) {
         EV_INFO << "Processing ICMPv6 message.\n";
         processICMPv6Message(check_and_cast<ICMPv6Message *>(msg));
-        return;
-    }
-
-    // request from application
-    if (msg->getArrivalGate()->isName("pingIn")) {
-        sendEchoRequest(check_and_cast<PingPayload *>(msg));
         return;
     }
 }
@@ -91,8 +83,7 @@ void ICMPv6::processICMPv6Message(ICMPv6Message *icmpv6msg)
         processEchoRequest((ICMPv6EchoRequestMsg *)icmpv6msg);
     }
     else if (dynamic_cast<ICMPv6EchoReplyMsg *>(icmpv6msg)) {
-        EV_INFO << "ICMPv6 Echo Reply Message Received." << endl;
-        processEchoReply((ICMPv6EchoReplyMsg *)icmpv6msg);
+        delete icmpv6msg;
     }
     else
         throw cRuntimeError("Unknown message type received.\n");
@@ -147,37 +138,6 @@ void ICMPv6::processEchoRequest(ICMPv6EchoRequestMsg *request)
 
     delete request;
     sendToIP(reply);
-}
-
-void ICMPv6::processEchoReply(ICMPv6EchoReplyMsg *reply)
-{
-    IPv6ControlInfo *ctrl = check_and_cast<IPv6ControlInfo *>(reply->removeControlInfo());
-    PingPayload *payload = check_and_cast<PingPayload *>(reply->decapsulate());
-    payload->setControlInfo(ctrl);
-    delete reply;
-    long originatorId = payload->getOriginatorId();
-    auto i = pingMap.find(originatorId);
-    if (i != pingMap.end())
-        send(payload, "pingOut", i->second);
-    else {
-        EV_WARN << "Received ECHO REPLY has an unknown originator ID: " << originatorId << ", packet dropped." << endl;
-        delete payload;
-    }
-}
-
-void ICMPv6::sendEchoRequest(PingPayload *msg)
-{
-    cGate *arrivalGate = msg->getArrivalGate();
-    int i = arrivalGate->getIndex();
-    pingMap[msg->getOriginatorId()] = i;
-
-    IPv6ControlInfo *ctrl = check_and_cast<IPv6ControlInfo *>(msg->removeControlInfo());
-    ctrl->setProtocol(IP_PROT_IPv6_ICMP);
-    ICMPv6EchoRequestMsg *request = new ICMPv6EchoRequestMsg(msg->getName());
-    request->setType(ICMPv6_ECHO_REQUEST);
-    request->encapsulate(msg);
-    request->setControlInfo(ctrl);
-    sendToIP(request);
 }
 
 void ICMPv6::sendErrorMessage(IPv6Datagram *origDatagram, ICMPv6Type type, int code)
