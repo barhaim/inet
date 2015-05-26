@@ -97,8 +97,6 @@ module MultiNetworkLayer like INetworkLayer
         output ifOut[] @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
-        input pingIn[] @labels(PingPayload/down);
-        output pingOut[] @labels(PingPayload/up);
 
     submodules:
         ipv4: <"IPv4NetworkLayer"> like INetworkLayer if enableIPv4 {
@@ -115,8 +113,6 @@ module MultiNetworkLayer like INetworkLayer
             gates:
                 transportLowerIn[3*sizeof(transportOut)];
                 transportLowerOut[3*sizeof(transportIn)];
-                pingLowerIn[3*sizeof(pingOut)];
-                pingLowerOut[3*sizeof(pingIn)];
         }
         lowerMultiplexer: MultiNetworkLayerLowerMultiplexer {
             @display("p=300,500");
@@ -138,20 +134,6 @@ module MultiNetworkLayer like INetworkLayer
             ipv6.transportOut++ --> upperMultiplexer.transportLowerIn[1+3*i] if enableIPv6;
             generic.transportOut++ --> upperMultiplexer.transportLowerIn[2+3*i] if enableGeneric;
             upperMultiplexer.transportUpperOut++ --> { @display("m=n"); } --> transportOut[i];
-        }
-
-        // ping
-        for i=0..sizeof(pingIn)-1 {
-            upperMultiplexer.pingLowerOut[0+3*i] --> ipv4.pingIn++ if enableIPv4;
-            upperMultiplexer.pingLowerOut[1+3*i] --> ipv6.pingIn++ if enableIPv6;
-            upperMultiplexer.pingLowerOut[2+3*i] --> generic.pingIn++ if enableGeneric;
-            pingIn[i] --> { @display("m=n"); } --> upperMultiplexer.pingUpperIn++;
-        }
-        for i=0..sizeof(pingOut)-1 {
-            ipv4.pingOut++ --> upperMultiplexer.pingLowerIn[0+3*i] if enableIPv4;
-            ipv6.pingOut++ --> upperMultiplexer.pingLowerIn[1+3*i] if enableIPv6;
-            generic.pingOut++ --> upperMultiplexer.pingLowerIn[2+3*i] if enableGeneric;
-            upperMultiplexer.pingUpperOut++ --> { @display("m=n"); } --> pingOut[i];
         }
 
         // interface

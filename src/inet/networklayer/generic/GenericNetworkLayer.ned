@@ -39,8 +39,6 @@ module GenericNetworkLayer like INetworkLayer
         output ifOut[] @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
-        input pingIn[] @labels(PingPayload/down);
-        output pingOut[] @labels(PingPayload/up);
 
     submodules:
         gnp: GenericNetworkProtocol {
@@ -68,13 +66,6 @@ module GenericNetworkLayer like INetworkLayer
 
         gnp.transportOut++ --> echo.localIn;
         gnp.transportIn++ <-- echo.sendOut;
-
-        for i=0..sizeof(pingOut)-1 {
-            echo.pingOut++ --> { @display("m=n"); } --> pingOut[i];
-        }
-        for i=0..sizeof(pingIn)-1 {
-            echo.pingIn++ <-- { @display("m=n"); } <-- pingIn[i];
-        }
 
         gnp.arpOut --> arp.netwIn;
         gnp.arpIn <-- arp.netwOut;
