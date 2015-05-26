@@ -18,7 +18,23 @@
 
 namespace inet;
 
-message RegisterTransportProtocolCommand
+message RegisterProtocolCommand;
+
+enum ProtocolLayer {
+    TRANSPORT_LAYER_PROTOCOL = 0;
+    NETWORK_LAYER_PROTOCOL = 1;
+    LINK_LAYER_PROTOCOL = 2;
+};
+
+message RegisterProtocolCommand
 {
-    int protocol;
+    @customize();
+    int layer @enum(ProtocolLayer) = -1;
+    int protocol = -1;
+}
+
+message RegisterInterfaceCommand
+{
+    @customize();
+    int interfaceId = -1;
 }
