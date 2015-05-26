@@ -13,10 +13,6 @@ import inet.node.gpsr.GPSRRouter;
 import inet.physicallayer.ieee80211.packetlevel.Ieee80211ScalarRadioMedium;
 
 
-module Dummy
-{
-}
-
 //
 // TODO
 //
@@ -34,7 +30,7 @@ network GPSRNetworkRandom
                 config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");   // for IPv4
                 @display("p=50,100");
         }
-        ipv6configurator: Dummy {
+        ipv6configurator: FlatNetworkConfigurator6 {
             parameters:
                 @display("p=150,100");
         }
@@ -71,7 +67,7 @@ network GPSRNetworkManual
                 config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");   // for IPv4
                 @display("p=50,100");
         }
-        ipv6configurator: Dummy {
+        ipv6configurator: FlatNetworkConfigurator6 {
             parameters:
                 @display("p=150,100");
         }
