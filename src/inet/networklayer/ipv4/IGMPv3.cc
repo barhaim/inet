@@ -21,11 +21,11 @@
  */
 
 #include "inet/networklayer/ipv4/IGMPv3.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/ipv4/IPv4InterfaceData.h"
 #include "inet/networklayer/ipv4/IPv4RoutingTable.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 
 #include <algorithm>
 #include <bitset>
@@ -429,9 +429,7 @@ void IGMPv3::initialize(int stage)
         WATCH(numGroupAndSourceSpecificQueriesRecv);
         WATCH(numReportsSent);
         WATCH(numReportsRecv);
-
-        IPSocket ipSocket(gate("ipOut"));
-        ipSocket.registerProtocol(IP_PROT_IGMP);
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_IGMP), "ipOut");
     }
     else if (stage == INITSTAGE_NETWORK_LAYER) {
         for (int i = 0; i < (int)ift->getNumInterfaces(); ++i) {

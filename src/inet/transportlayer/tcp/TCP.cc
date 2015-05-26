@@ -17,7 +17,6 @@
 
 #include "inet/transportlayer/tcp/TCP.h"
 
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
 #include "inet/networklayer/common/IPProtocolId_m.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
@@ -42,6 +41,7 @@
 #include "inet/transportlayer/tcp/queues/TCPMsgBasedSendQueue.h"
 #include "inet/transportlayer/tcp/queues/TCPVirtualDataRcvQueue.h"
 #include "inet/transportlayer/tcp/queues/TCPVirtualDataSendQueue.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -98,8 +98,7 @@ void TCP::initialize(int stage)
     else if (stage == INITSTAGE_TRANSPORT_LAYER) {
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
-        IPSocket ipSocket(gate("ipOut"));
-        ipSocket.registerProtocol(IP_PROT_TCP);
+        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_TCP), "ipOut");
     }
 }
 

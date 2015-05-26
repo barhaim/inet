@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "inet/linklayer/base/MACBase.h"
+#include "inet/common/ProtocolCommand.h"
 
 #include "inet/common/lifecycle/NodeStatus.h"
 #include "inet/common/NotifierConsts.h"
@@ -102,6 +103,7 @@ void MACBase::registerInterface()    //XXX registerInterfaceIfInterfaceTableExis
     if (ift) {
         interfaceEntry = createInterfaceEntry();
         ift->addInterface(interfaceEntry);
+        send(new RegisterInterfaceCommand(interfaceEntry->getInterfaceId()), "netwOut");
     }
 }
 

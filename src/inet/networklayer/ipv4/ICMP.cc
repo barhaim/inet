@@ -20,15 +20,13 @@
 
 #include <string.h>
 
-#include "inet/networklayer/ipv4/ICMP.h"
-
-#include "inet/networklayer/common/IPSocket.h"
-#include "inet/networklayer/ipv4/IPv4Datagram.h"
-#include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
-#include "inet/applications/pingapp/PingPayload_m.h"
-#include "inet/networklayer/ipv4/IPv4InterfaceData.h"
-#include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/networklayer/contract/IInterfaceTable.h"
+#include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
+#include "inet/networklayer/ipv4/ICMP.h"
+#include "inet/networklayer/ipv4/IPv4Datagram.h"
+#include "inet/networklayer/ipv4/IPv4InterfaceData.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -37,11 +35,8 @@ Define_Module(ICMP);
 void ICMP::initialize(int stage)
 {
     cSimpleModule::initialize(stage);
-
-    if (stage == INITSTAGE_NETWORK_LAYER_2) {
-        IPSocket socket(gate("sendOut"));
-        socket.registerProtocol(IP_PROT_ICMP);
-    }
+    if (stage == INITSTAGE_NETWORK_LAYER_2)
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_ICMP), "sendOut");
 }
 
 void ICMP::handleMessage(cMessage *msg)

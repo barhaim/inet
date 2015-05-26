@@ -18,13 +18,13 @@
 //          Tamas Borbely (tomi@omnetpp.org)
 
 #include "inet/networklayer/ipv4/IPv4Datagram.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/ipv4/IPv4InterfaceData.h"
 #include "inet/networklayer/common/InterfaceTable.h"
 #include "inet/networklayer/contract/ipv4/IPv4Address.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/routing/pim/modes/PIMBase.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -94,9 +94,7 @@ void PIMBase::initialize(int stage)
 bool PIMBase::handleNodeStart(IDoneCallback *doneCallback)
 {
     generationID = intrand(UINT32_MAX);
-
-    IPSocket ipSocket(gate("ipOut"));
-    ipSocket.registerProtocol(IP_PROT_PIM);
+    send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_PIM), "ipOut");
 
     // to receive PIM messages, join to ALL_PIM_ROUTERS multicast group
     isEnabled = false;

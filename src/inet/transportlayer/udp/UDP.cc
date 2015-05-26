@@ -20,9 +20,9 @@
 #include <string>
 #include "inet/transportlayer/udp/UDP.h"
 #include "inet/transportlayer/udp/UDPPacket.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/networklayer/common/InterfaceEntry.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/contract/ipv6/IPv6ControlInfo.h"
 #include "inet/networklayer/contract/generic/GenericNetworkProtocolControlInfo.h"
@@ -140,11 +140,9 @@ void UDP::initialize(int stage)
         isOperational = false;
     }
     else if (stage == INITSTAGE_TRANSPORT_LAYER) {
-        IPSocket ipSocket(gate("ipOut"));
-        ipSocket.registerProtocol(IP_PROT_UDP);
-
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
+        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_UDP), "ipOut");
     }
 }
 

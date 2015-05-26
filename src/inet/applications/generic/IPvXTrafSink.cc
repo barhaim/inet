@@ -19,10 +19,10 @@
 #include "inet/applications/generic/IPvXTrafGen.h"
 
 #include "inet/networklayer/common/L3AddressResolver.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -40,9 +40,7 @@ void IPvXTrafSink::initialize(int stage)
     }
     else if (stage == INITSTAGE_APPLICATION_LAYER) {
         int protocol = par("protocol");
-        IPSocket ipSocket(gate("ipOut"));
-        ipSocket.registerProtocol(protocol);
-
+        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, protocol), "ipOut");
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
     }

@@ -17,13 +17,12 @@
 // Authors: Veronika Rybova, Vladimir Vesely (ivesely@fit.vutbr.cz),
 //          Tamas Borbely (tomi@omnetpp.org)
 
+#include "inet/common/ModuleAccess.h"
 #include "inet/networklayer/common/IPProtocolId_m.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/ipv4/ICMPMessage_m.h"
-#include "inet/common/ModuleAccess.h"
-#include "inet/networklayer/contract/NetworkProtocolCommand_m.h"
 #include "inet/routing/pim/PIMSplitter.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 using namespace std;
@@ -45,10 +44,8 @@ void PIMSplitter::initialize(int stage)
         pimSMIn = gate("pimSMIn");
         pimSMOut = gate("pimSMOut");
     }
-    else if (stage == INITSTAGE_TRANSPORT_LAYER) {
-        IPSocket ipSocket(ipOut);
-        ipSocket.registerProtocol(IP_PROT_PIM);
-    }
+    else if (stage == INITSTAGE_TRANSPORT_LAYER)
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_PIM), "ipOut");
 }
 
 void PIMSplitter::handleMessage(cMessage *msg)

@@ -15,8 +15,8 @@
 
 #include "inet/routing/extras/dsdv/DSDVhello_m.h"//created by opp_msgc 3.3 from DSDVhello.msg
 #include "inet/routing/extras/dsdv/DSDV_2.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -40,8 +40,7 @@ void DSDV_2::initialize(int stage)
     }
     else if (stage == INITSTAGE_ROUTING_PROTOCOLS)
     {
-        IPSocket socket(gate("to_ip"));
-        socket.registerProtocol(IP_PROT_MANET);
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "to_ip");
 
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         /* Search the 80211 interface */

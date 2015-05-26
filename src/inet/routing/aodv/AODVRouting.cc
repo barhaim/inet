@@ -39,10 +39,11 @@
 #include "inet/linklayer/bmac/BMacFrame_m.h"
 #endif // ifdef WITH_BMAC
 
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/transportlayer/contract/udp/UDPControlInfo.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
+#include "inet/networklayer/common/IPProtocolId_m.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -91,8 +92,7 @@ void AODVRouting::initialize(int stage)
         isOperational = !nodeStatus || nodeStatus->getState() == NodeStatus::UP;
 
         addressType = getSelfIPAddress().getAddressType();
-        IPSocket socket(gate("ipOut"));
-        socket.registerProtocol(IP_PROT_MANET);
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "ipOut");
         networkProtocol->registerHook(0, this);
         host->subscribe(NF_LINK_BREAK, this);
 

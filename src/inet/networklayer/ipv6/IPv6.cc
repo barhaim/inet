@@ -20,7 +20,7 @@
 
 #include "inet/networklayer/ipv6/IPv6.h"
 
-#include "inet/networklayer/common/IPSocket.h"
+#include "inet/common/ProtocolCommand.h"
 
 #include "inet/networklayer/contract/ipv6/IPv6ControlInfo.h"
 #include "inet/networklayer/icmpv6/IPv6NDMessage_m.h"
@@ -101,6 +101,9 @@ void IPv6::initialize(int stage)
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
         if (!isOperational)
             throw cRuntimeError("This module doesn't support starting in node DOWN state");
+        RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, ETHERTYPE_IPv6);
+        send(command->dup(), "transportOut", 0);
+        send(command, "queueOut", 0);
     }
 }
 

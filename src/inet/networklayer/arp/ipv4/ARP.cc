@@ -28,6 +28,7 @@
 #include "inet/networklayer/ipv4/IPv4InterfaceData.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/common/lifecycle/NodeStatus.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -80,8 +81,8 @@ void ARP::initialize(int stage)
     else if (stage == INITSTAGE_NETWORK_LAYER_3) {    // IP addresses should be available
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         rt = getModuleFromPar<IIPv4RoutingTable>(par("routingTableModule"), this);
-
         isUp = isNodeUp();
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, ETHERTYPE_ARP), "ifOut");
     }
 }
 

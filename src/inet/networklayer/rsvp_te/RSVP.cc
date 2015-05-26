@@ -21,10 +21,10 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/common/lifecycle/NodeStatus.h"
-#include "inet/networklayer/common/IPSocket.h"
 #include "inet/networklayer/ipv4/IIPv4RoutingTable.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/networklayer/ted/TED.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -78,9 +78,7 @@ void RSVP::initialize(int stage)
 
         // process traffic configuration
         readTrafficFromXML(par("traffic").xmlValue());
-
-        IPSocket ipSocket(gate("ipOut"));
-        ipSocket.registerProtocol(IP_PROT_RSVP);
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_RSVP), "ipOut");
     }
 }
 
