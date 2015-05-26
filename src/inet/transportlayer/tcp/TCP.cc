@@ -138,7 +138,7 @@ void TCP::handleMessage(cMessage *msg)
             EV_DETAIL << "ICMP error received -- discarding\n";    // FIXME can ICMP packets really make it up to TCP???
             delete msg;
         }
-        else {
+        else if (msg->isPacket()) {
             // must be a TCPSegment
             TCPSegment *tcpseg = check_and_cast<TCPSegment *>(msg);
 
@@ -165,6 +165,12 @@ void TCP::handleMessage(cMessage *msg)
             else {
                 segmentArrivalWhileClosed(tcpseg, srcAddr, destAddr);
             }
+        }
+        else if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+            delete msg;
+        }
+        else if (dynamic_cast<RegisterInterfaceCommand *>(msg)) {
+            delete msg;
         }
     }
     else {    // must be from app

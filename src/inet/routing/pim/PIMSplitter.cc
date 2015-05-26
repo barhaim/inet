@@ -65,7 +65,7 @@ void PIMSplitter::handleMessage(cMessage *msg)
             throw cRuntimeError("PIMSplitter: received unknown packet '%s (%s)' from the network layer.", msg->getName(), msg->getClassName());
     }
     else if (arrivalGate == pimSMIn || arrivalGate == pimDMIn) {
-        if (dynamic_cast<RegisterTransportProtocolCommand *>(msg)) {
+        if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
             // Drop protocol registrations, splitter register PIM protocol itself
             delete msg;
         }

@@ -16,16 +16,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
+#include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/networklayer/generic/GenericNetworkProtocol.h"
-
 #include "inet/networklayer/generic/GenericDatagram.h"
 #include "inet/networklayer/contract/generic/GenericNetworkProtocolControlInfo.h"
 #include "inet/networklayer/generic/GenericNetworkProtocolInterfaceData.h"
 #include "inet/networklayer/generic/GenericRoute.h"
 #include "inet/networklayer/generic/GenericRoutingTable.h"
-#include "inet/common/ModuleAccess.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
-#include "inet/networklayer/common/IPSocket.h"
 
 namespace inet {
 
@@ -86,8 +85,8 @@ void GenericNetworkProtocol::updateDisplayString()
 
 void GenericNetworkProtocol::handleMessage(cMessage *msg)
 {
-    if (dynamic_cast<RegisterTransportProtocolCommand *>(msg)) {
-        RegisterTransportProtocolCommand *command = check_and_cast<RegisterTransportProtocolCommand *>(msg);
+    if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+        RegisterProtocolCommand *command = check_and_cast<RegisterProtocolCommand *>(msg);
         mapping.addProtocolMapping(command->getProtocol(), msg->getArrivalGate()->getIndex());
         delete msg;
     }

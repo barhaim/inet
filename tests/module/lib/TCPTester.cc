@@ -19,8 +19,7 @@
 
 #include "TCPTester.h"
 
-#include "inet/networklayer/contract/NetworkProtocolCommand_m.h"
-#include "inet/networklayer/common/IPSocket.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 
 namespace inet {
@@ -134,13 +133,12 @@ void TCPScriptableTester::parseScript(const char *script)
 
 void TCPScriptableTester::handleMessage(cMessage *msg)
 {
-    if (dynamic_cast<RegisterTransportProtocolCommand*>(msg))
+    if (dynamic_cast<RegisterProtocolCommand*>(msg))
     {
         delete msg;
         return;
     }
-
-    if (msg->isSelfMessage())
+    else if (msg->isSelfMessage())
     {
         TCPSegment *seg = check_and_cast<TCPSegment *>(msg);
         dispatchSegment(seg);
@@ -234,13 +232,12 @@ void TCPRandomTester::initialize()
 
 void TCPRandomTester::handleMessage(cMessage *msg)
 {
-    if (dynamic_cast<RegisterTransportProtocolCommand*>(msg))
+    if (dynamic_cast<RegisterProtocolCommand*>(msg))
     {
         delete msg;
         return;
     }
-
-    if (msg->isSelfMessage())
+    else if (msg->isSelfMessage())
     {
         TCPSegment *seg = check_and_cast<TCPSegment *>(msg);
         dispatchSegment(seg);

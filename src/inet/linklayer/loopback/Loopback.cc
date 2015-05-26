@@ -20,12 +20,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inet/linklayer/loopback/Loopback.h"
-
 #include "inet/common/INETUtils.h"
-#include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/common/queue/IPassiveQueue.h"
 #include "inet/common/NotifierConsts.h"
+#include "inet/common/ProtocolCommand.h"
+#include "inet/linklayer/loopback/Loopback.h"
+#include "inet/networklayer/contract/IInterfaceTable.h"
 
 namespace inet {
 
@@ -77,6 +77,10 @@ void Loopback::handleMessage(cMessage *msg)
 {
     if (!isOperational) {
         handleMessageWhenDown(msg);
+        return;
+    }
+    if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+        delete msg;
         return;
     }
 

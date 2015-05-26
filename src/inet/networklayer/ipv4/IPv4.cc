@@ -122,9 +122,15 @@ void IPv4::updateDisplayString()
 
 void IPv4::handleMessage(cMessage *msg)
 {
-    if (dynamic_cast<RegisterTransportProtocolCommand *>(msg)) {
-        RegisterTransportProtocolCommand *command = check_and_cast<RegisterTransportProtocolCommand *>(msg);
-        mapping.addProtocolMapping(command->getProtocol(), msg->getArrivalGate()->getIndex());
+    if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+        RegisterProtocolCommand *command = check_and_cast<RegisterProtocolCommand *>(msg);
+        if (command->getLayer() == NETWORK_LAYER_PROTOCOL)
+            mapping.addProtocolMapping(command->getProtocol(), msg->getArrivalGate()->getIndex());
+        delete msg;
+    }
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg)) {
+        delete msg;
+    }
         delete msg;
     }
     else if (!msg->isSelfMessage() && msg->getArrivalGate()->isName("arpIn"))

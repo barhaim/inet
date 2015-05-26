@@ -155,11 +155,13 @@ void UDP::handleMessage(cMessage *msg)
     if (msg->arrivedOn("ipIn")) {
         if (dynamic_cast<UDPPacket *>(msg) != nullptr)
             processUDPPacket((UDPPacket *)msg);
-        else
+        else if (msg->isPacket())
             processICMPError(PK(msg)); // assume it's an ICMP error
+        else
+            processCommandFromNetwork(msg);
     }
     else {    // received from application layer
-        if (msg->getKind() == UDP_C_DATA)
+        if (msg->getKind() == UDP_C_DATA && msg->isPacket())
             processPacketFromApp(PK(msg));
         else
             processCommandFromApp(msg);
@@ -285,6 +287,16 @@ void UDP::processCommandFromApp(cMessage *msg)
     }
 
     delete msg;    // also deletes control info in it
+}
+
+void UDP::processCommandFromNetwork(cMessage *msg)
+{
+    if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
+    else
+        throw cRuntimeError("Unknown message");
 }
 
 void UDP::processPacketFromApp(cPacket *appData)

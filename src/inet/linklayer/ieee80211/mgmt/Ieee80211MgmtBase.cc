@@ -73,6 +73,10 @@ void Ieee80211MgmtBase::handleMessage(cMessage *msg)
         handleTimer(msg);
     }
     else if (msg->arrivedOn("macIn")) {
+        if (dynamic_cast<RegisterInterfaceCommand *>(msg)) {
+            send(msg, "upperLayerOut");
+            return;
+        }
         // process incoming frame
         EV << "Frame arrived from MAC: " << msg << "\n";
         Ieee80211DataOrMgmtFrame *frame = check_and_cast<Ieee80211DataOrMgmtFrame *>(msg);
@@ -88,6 +92,10 @@ void Ieee80211MgmtBase::handleMessage(cMessage *msg)
         handleCommand(msgkind, ctrl);
     }
     else {
+        if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+            delete msg;
+            return;
+        }
         // packet from upper layers, to be sent out
         cPacket *pk = PK(msg);
         EV << "Packet arrived from upper layers: " << pk << "\n";

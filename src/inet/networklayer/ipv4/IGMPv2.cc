@@ -479,6 +479,8 @@ void IGMPv2::handleMessage(cMessage *msg)
                 break;
         }
     }
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
     else if (!strcmp(msg->getArrivalGate()->getName(), "routerIn"))
         send(msg, "ipOut");
     else if (dynamic_cast<IGMPMessage *>(msg))

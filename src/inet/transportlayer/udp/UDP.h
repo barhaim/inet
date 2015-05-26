@@ -171,6 +171,9 @@ class INET_API UDP : public cSimpleModule, public ILifecycle
     // process commands from application
     virtual void processCommandFromApp(cMessage *msg);
 
+    // process commands from network
+    virtual void processCommandFromNetwork(cMessage *msg);
+
     // create a blank UDP packet; override to subclass UDPPacket
     virtual UDPPacket *createUDPPacket(const char *name);
 

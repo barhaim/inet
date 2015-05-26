@@ -104,6 +104,10 @@ void ARP::handleMessage(cMessage *msg)
     if (msg->isSelfMessage()) {
         requestTimedOut(msg);
     }
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
     else {
         ARPPacket *arp = check_and_cast<ARPPacket *>(msg);
         processARPPacket(arp);
