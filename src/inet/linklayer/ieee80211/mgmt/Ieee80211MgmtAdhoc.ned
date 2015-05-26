@@ -34,8 +34,9 @@ package inet.linklayer.ieee80211.mgmt;
 simple Ieee80211MgmtAdhoc like IIeee80211Mgmt
 {
     parameters:
-        int frameCapacity = default(100);
         string macModule;               // The path to the MAC module
+        string interfaceTableModule;   // The path to the InterfaceTable module
+        int frameCapacity = default(100);
         @display("i=block/cogwheel");
         @signal[rcvdPk](type=cPacket);
         @signal[enqueuePk](type=cPacket);

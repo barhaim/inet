@@ -101,7 +101,6 @@ void Ieee80211MgmtSTA::initialize(int stage)
         isScanning = false;
         isAssociated = false;
         assocTimeoutMsg = nullptr;
-        myIface = nullptr;
         numChannels = par("numChannels");
 
         host = getContainingNode(this);
@@ -113,12 +112,6 @@ void Ieee80211MgmtSTA::initialize(int stage)
         WATCH(scanning);
         WATCH(assocAP);
         WATCH_LIST(apList);
-    }
-    else if (stage == INITSTAGE_LINK_LAYER_2) {
-        IInterfaceTable *ift = findModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
-        if (ift) {
-            myIface = ift->getInterfaceByName(utils::stripnonalnum(findModuleUnderContainingNode(this)->getFullName()).c_str());
-        }
     }
 }
 
@@ -238,6 +231,7 @@ cPacket *Ieee80211MgmtSTA::decapsulate(Ieee80211DataFrame *frame)
     Ieee802Ctrl *ctrl = new Ieee802Ctrl();
     ctrl->setSrc(frame->getAddress3());
     ctrl->setDest(frame->getReceiverAddress());
+    ctrl->setInterfaceId(myIface->getInterfaceId());
     Ieee80211DataFrameWithSNAP *frameWithSNAP = dynamic_cast<Ieee80211DataFrameWithSNAP *>(frame);
     if (frameWithSNAP)
         ctrl->setEtherType(frameWithSNAP->getEtherType());

@@ -66,6 +66,7 @@ cPacket *Ieee80211MgmtAdhoc::decapsulate(Ieee80211DataFrame *frame)
     Ieee802Ctrl *ctrl = new Ieee802Ctrl();
     ctrl->setSrc(frame->getTransmitterAddress());
     ctrl->setDest(frame->getReceiverAddress());
+    ctrl->setInterfaceId(myIface->getInterfaceId());
     Ieee80211DataFrameWithSNAP *frameWithSNAP = dynamic_cast<Ieee80211DataFrameWithSNAP *>(frame);
     if (frameWithSNAP)
         ctrl->setEtherType(frameWithSNAP->getEtherType());
