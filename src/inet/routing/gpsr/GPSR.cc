@@ -366,6 +366,16 @@ std::string GPSR::getHostName() const
 L3Address GPSR::getSelfAddress() const
 {
     L3Address ret = routingTable->getRouterIdAsGeneric();
+#ifdef WITH_IPv6
+    if (ret.getType() == L3Address::IPv6) {
+        for (int i = 1; i < interfaceTable->getNumInterfaces(); i++) {
+            if (interfaceTable->getInterface(i)->ipv6Data() != nullptr) {
+                ret = interfaceTable->getInterface(i)->ipv6Data()->getPreferredAddress();
+                break;
+            }
+        }
+    }
+#endif
     return ret;
 }
 
