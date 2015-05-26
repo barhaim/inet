@@ -42,13 +42,12 @@ module IPv4NetworkLayer like INetworkLayer
         *.icmpModule = default(absPath(".icmp"));
         arp.respondToProxyARP = proxyARP;
         @display("i=block/fork");
+
     gates:
         input ifIn[] @labels(INetworkDatagram);
         output ifOut[] @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
-        input pingIn[] @labels(PingPayload/down);
-        output pingOut[] @labels(PingPayload/up);
         input igmpIn;
         output igmpOut;
         input arpIn;
@@ -96,13 +95,6 @@ module IPv4NetworkLayer like INetworkLayer
 
         ip.transportOut++ --> igmp.ipIn;
         ip.transportIn++ <-- igmp.ipOut;
-
-        for i=0..sizeof(pingOut)-1 {
-            icmp.pingOut++ --> { @display("m=n"); } --> pingOut[i];
-        }
-        for i=0..sizeof(pingIn)-1 {
-            icmp.pingIn++ <-- { @display("m=n"); } <-- pingIn[i];
-        }
 
         icmp.errorOut --> errorHandling.in;
 

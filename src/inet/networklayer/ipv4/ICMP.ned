@@ -46,8 +46,6 @@ simple ICMP
         @display("i=block/control_s");
     gates:
         input localIn @labels(IPv4ControlInfo/up);  // delivered ICMP packets
-        input pingIn[];  // ping requests from app
-        output pingOut[];  // result of ping
         output sendOut @labels(IPv4ControlInfo/down);  // towards network
         output errorOut;  // errors
 }

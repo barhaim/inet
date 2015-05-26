@@ -29,8 +29,6 @@ moduleinterface INetworkLayerUpper
     gates:
         input transportIn[] @labels(ITransportPacket/down);
         output transportOut[] @labels(ITransportPacket/up);
-        input pingIn[]@labels(PingPayload/down);
-        output pingOut[] @labels(PingPayload/up);
 }
 
 //
