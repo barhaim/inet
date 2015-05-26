@@ -41,9 +41,9 @@ module AdhocHost extends WirelessHost
 
     submodules:
         manetrouting: <routingProtocol> like IManetRouting if routingProtocol != "" {
-            @display("p=522,307");
+            @display("p=649,222");
         }
     connections:
-        networkLayer.transportOut++ --> manetrouting.from_ip if routingProtocol != "";
-        networkLayer.transportIn++ <-- manetrouting.to_ip if routingProtocol != "";
+//        networkLayer.transportOut++ --> manetrouting.from_ip if routingProtocol != "";
+//        networkLayer.transportIn++ <-- manetrouting.to_ip if routingProtocol != "";
 }

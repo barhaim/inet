@@ -85,29 +85,29 @@ module Router extends NodeBase
         }
 
     connections allowunconnected:
-        if hasOSPF {
-            ospf.ipOut --> networkLayer.transportIn++;
-            ospf.ipIn <-- networkLayer.transportOut++;
-        }
-
-        if hasBGP {
-            bgp.tcpOut --> tcp.appIn++;
-            bgp.tcpIn <-- tcp.appOut++;
-
-            tcp.ipOut --> networkLayer.transportIn++;
-            tcp.ipIn <-- networkLayer.transportOut++;
-        }
-
-        if hasRIP {
-            rip.udpOut --> udp.appIn++;
-            rip.udpIn <-- udp.appOut++;
-
-            udp.ipOut --> networkLayer.transportIn++;
-            udp.ipIn <-- networkLayer.transportOut++;
-        }
-
-        if hasPIM {
-            pim.networkLayerOut --> networkLayer.transportIn++;
-            pim.networkLayerIn <-- networkLayer.transportOut++;
-        }
+//        if hasOSPF {
+//            ospf.ipOut --> networkLayer.transportIn++;
+//            ospf.ipIn <-- networkLayer.transportOut++;
+//        }
+//
+//        if hasBGP {
+//            bgp.tcpOut --> tcp.appIn++;
+//            bgp.tcpIn <-- tcp.appOut++;
+//
+//            tcp.ipOut --> networkLayer.transportIn++;
+//            tcp.ipIn <-- networkLayer.transportOut++;
+//        }
+//
+//        if hasRIP {
+//            rip.udpOut --> udp.appIn++;
+//            rip.udpIn <-- udp.appOut++;
+//
+//            udp.ipOut --> networkLayer.transportIn++;
+//            udp.ipIn <-- networkLayer.transportOut++;
+//        }
+//
+//        if hasPIM {
+//            pim.networkLayerOut --> networkLayer.transportIn++;
+//            pim.networkLayerIn <-- networkLayer.transportOut++;
+//        }
 }

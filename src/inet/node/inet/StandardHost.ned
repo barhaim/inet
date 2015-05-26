@@ -18,14 +18,12 @@
 
 package inet.node.inet;
 
-import inet.applications.contract.IPingApp;
-import inet.applications.contract.ISCTPApp;
-import inet.applications.contract.ITCPApp;
-import inet.applications.contract.IUDPApp;
+import inet.applications.contract.IApp;
+import inet.common.ApplicationToTransport;
+import inet.common.TransportToNetwork;
 import inet.transportlayer.contract.ISCTP;
 import inet.transportlayer.contract.ITCP;
 import inet.transportlayer.contract.IUDP;
-import inet.applications.contract.ITunApp;
 
 //
 // IPv4 host with SCTP, TCP, UDP layers and applications.
@@ -47,83 +45,91 @@ import inet.applications.contract.ITunApp;
 module StandardHost extends NodeBase
 {
     parameters:
-        @display("i=device/pc2");
-        int numTcpApps = default(0);  // no of TCP apps. Specify the app types in INI file with tcpApp[0..1].typename="TCPEchoApp" syntax
-        int numUdpApps = default(0);  // no of UDP apps. Specify the app types in INI file with udpApp[0..1].typename="UDPVideoStreamCli" syntax
-        int numSctpApps = default(0); // no of SCTP apps. Specify the app types in INI file with sctpApp[0..1].typename="SCTPServer" syntax
-        int numPingApps = default(0);  // no of PING apps. Specify the app types in INI file with pingApp[0..1].typename="PingApp" syntax
-        bool hasTcp = default(numTcpApps > 0);
-        bool hasUdp = default(numUdpApps > 0);
-        bool hasSctp = default(numSctpApps > 0);
-        bool hasTun = default(numTunInterfaces > 0);
+        int numApps = default(0);
+        bool hasTcp = default(true);
+        bool hasUdp = default(true);
+        bool hasSctp = default(false);
+        bool hasTun = default(false);
         string tcpType = default(firstAvailableOrEmpty("TCP", "TCP_lwIP", "TCP_NSC"));  // tcp implementation (e.g. ~TCP, ~TCP_lwIP, ~TCP_NSC) or ~TCPSpoof
         string udpType = default(firstAvailableOrEmpty("UDP"));
         string sctpType = default(firstAvailableOrEmpty("SCTP"));
         forwarding = default(false);  // disable routing by default
         networkLayer.proxyARP = default(false);
+        ipv4.routingTableModule = default(absPath(".ipv4RoutingTable"));
+        ipv6.routingTableModule = default(absPath(".ipv6RoutingTable"));
+        gn.routingTableModule = default(absPath(".gnRoutingTable"));
+        sctp.routingTableModule = default(absPath(".ipv4RoutingTable"));
+        @display("i=device/pc2");
+        @figure[applicationLayer](type=rectangle; pos=250,0; size=600,200; fillColor=#ffff00; cornerRadius=12; fillOpacity=0.1);
+        @figure[applicationLayer.title](type=text; pos=740,10; text="application layer");
+        @figure[transportLayer](type=rectangle; pos=250,200; size=600,200; fillColor=#ff0000; cornerRadius=12; fillOpacity=0.1);
+        @figure[transportLayer.title](type=text; pos=740,210; text="transport layer");
+        @figure[submodules];
+
     submodules:
-        tunApp[numTunInterfaces]: <> like ITunApp {
+        app[numApps]: <> like IApp {
             parameters:
-                @display("p=280,40");
+                @display("p=550,100,row,100");
         }
-        tcpApp[numTcpApps]: <> like ITCPApp {
+        at: ApplicationToTransport {
             parameters:
-                @display("p=147,54,row,60");
-        }
-        tcp: <tcpType> like ITCP if hasTcp {
-            parameters:
-                @display("p=147,141");
-        }
-        udpApp[numUdpApps]: <> like IUDPApp {
-            parameters:
-                @display("p=329,54,row,60");
+                @display("b=580,5,,,,1;p=550,200");
         }
         udp: <udpType> like IUDP if hasUdp {
             parameters:
-                @display("p=329,141");
+                @display("p=400,300");
         }
-        sctpApp[numSctpApps]: <> like ISCTPApp {
+        tcp: <tcpType> like ITCP if hasTcp {
             parameters:
-                @display("p=527,54,row,60");
+                @display("p=500,300");
         }
         sctp: <sctpType> like ISCTP if hasSctp {
-            @display("p=527,141");
-        }
-        pingApp[numPingApps]: <default("PingApp")> like IPingApp {
             parameters:
-                @display("p=635,141,row,60");
+                @display("p=600,300");
+        }
+        tn: TransportToNetwork {
+            parameters:
+                @display("b=580,5,,,,1;p=550,400");
         }
     connections allowunconnected:
-        for i=0..numTcpApps-1 {
-            tcpApp[i].tcpOut --> tcp.appIn++;
-            tcpApp[i].tcpIn <-- tcp.appOut++;
+        at.transportOut++ --> udp.appIn++ if hasUdp;
+        at.transportIn++ <-- udp.appOut++ if hasUdp;
+
+        at.transportOut++ --> tcp.appIn++ if hasTcp;
+        at.transportIn++ <-- tcp.appOut++ if hasTcp;
+
+        at.transportOut++ --> sctp.from_appl++ if hasSctp;
+        at.transportIn++ <-- sctp.to_appl++ if hasSctp;
+
+        at.transportOut++ --> tn.transportIn++;
+        at.transportIn++ <-- tn.transportOut++;
+
+        tn.networkOut++ --> ipv4.transportIn++ if hasIpv4;
+        tn.networkIn++ <-- ipv4.transportOut++ if hasIpv4;
+
+        tn.networkOut++ --> ipv4.igmpIn if hasIpv4;
+        tn.networkIn++ <-- ipv4.igmpOut if hasIpv4;
+
+        tn.networkOut++ --> ipv6.transportIn++ if hasIpv6;
+        tn.networkIn++ <-- ipv6.transportOut++ if hasIpv6;
+
+        tn.networkOut++ --> gn.transportIn++ if hasGn;
+        tn.networkIn++ <-- gn.transportOut++ if hasGn;
+
+        tn.networkOut++ --> nl.networkIn++;
+        tn.networkIn++ <-- nl.networkOut++;
+
+        for i=0..numApps-1 {
+            app[i].socketOut --> at.applicationIn++;
+            app[i].socketIn <-- at.applicationOut++;
         }
 
-        tcp.ipOut --> networkLayer.transportIn++ if hasTcp;
-        tcp.ipIn <-- networkLayer.transportOut++ if hasTcp;
+        udp.ipOut --> tn.transportIn++ if hasUdp;
+        udp.ipIn <-- tn.transportOut++ if hasUdp;
 
-        for i=0..numUdpApps-1 {
-            udpApp[i].udpOut --> udp.appIn++;
-            udpApp[i].udpIn <-- udp.appOut++;
-        }
+        tcp.ipOut --> tn.transportIn++ if hasTcp;
+        tcp.ipIn <-- tn.transportOut++ if hasTcp;
 
-        udp.ipOut --> networkLayer.transportIn++ if hasUdp;
-        udp.ipIn <-- networkLayer.transportOut++ if hasUdp;
-
-        for i=0..numSctpApps-1 {
-            sctpApp[i].sctpOut --> sctp.from_appl++;
-            sctp.to_appl++ --> sctpApp[i].sctpIn;
-        }
-        sctp.to_ip --> networkLayer.transportIn++ if hasSctp;
-        networkLayer.transportOut++ --> sctp.from_ip if hasSctp;
-
-        for i=0..numPingApps-1 {
-            networkLayer.pingOut++ --> pingApp[i].pingIn;
-            networkLayer.pingIn++ <-- pingApp[i].pingOut;
-        }
-
-        for i=0..numTunInterfaces-1 {
-            tunApp[i].tunOut --> tun[i].appIn if hasTun;
-            tunApp[i].tunIn <-- tun[i].appOut if hasTun;
-        }
+        sctp.to_ip --> tn.transportIn++ if hasSctp;
+        tn.transportOut++ --> sctp.from_ip if hasSctp;
 }
