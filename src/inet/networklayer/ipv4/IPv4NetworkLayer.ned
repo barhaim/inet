@@ -51,6 +51,8 @@ module IPv4NetworkLayer like INetworkLayer
         output pingOut[] @labels(PingPayload/up);
         input igmpIn;
         output igmpOut;
+        input arpIn;
+        output arpOut;
 
     submodules:
         configurator: IPv4NodeConfigurator {
@@ -106,6 +108,9 @@ module IPv4NetworkLayer like INetworkLayer
 
         ip.arpOut --> arp.netwIn;
         ip.arpIn <-- arp.netwOut;
+
+        arp.ifOut --> arpOut;
+        arp.ifIn <-- arpIn;
 
         igmp.routerOut --> igmpOut;
         igmp.routerIn <-- igmpIn;
