@@ -459,7 +459,7 @@ IIPv4RoutingTable *L3AddressResolver::findIPv4RoutingTableOf(cModule *host)
 {
 #ifdef WITH_IPv4
     // KLUDGE: TODO: look deeper temporarily
-    IIPv4RoutingTable *rt = dynamic_cast<IIPv4RoutingTable *>(host->getSubmodule("routingTable"));
+    IIPv4RoutingTable *rt = dynamic_cast<IIPv4RoutingTable *>(host->getSubmodule("ipv4RoutingTable"));
     if (!rt)
         rt = dynamic_cast<IIPv4RoutingTable *>(host->getModuleByPath(".routingTable.ipv4"));
     return rt;
@@ -472,7 +472,7 @@ IPv6RoutingTable *L3AddressResolver::findIPv6RoutingTableOf(cModule *host)
 {
 #ifdef WITH_IPv6
     // KLUDGE: TODO: look deeper temporarily
-    IPv6RoutingTable *rt = dynamic_cast<IPv6RoutingTable *>(host->getSubmodule("routingTable"));
+    IPv6RoutingTable *rt = dynamic_cast<IPv6RoutingTable *>(host->getSubmodule("ipv6RoutingTable"));
     if (!rt)
         rt = dynamic_cast<IPv6RoutingTable *>(host->getModuleByPath(".routingTable.ipv6"));
     return rt;
@@ -485,7 +485,7 @@ GenericRoutingTable *L3AddressResolver::findGenericRoutingTableOf(cModule *host)
 {
 #ifdef WITH_GENERIC
     // KLUDGE: TODO: look deeper temporarily
-    GenericRoutingTable *rt = dynamic_cast<GenericRoutingTable *>(host->getSubmodule("routingTable"));
+    GenericRoutingTable *rt = dynamic_cast<GenericRoutingTable *>(host->getSubmodule("gnRoutingTable"));
     if (!rt)
         rt = dynamic_cast<GenericRoutingTable *>(host->getModuleByPath(".routingTable.generic"));
     return rt;
