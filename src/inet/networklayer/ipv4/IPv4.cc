@@ -184,8 +184,8 @@ void IPv4::endService(cPacket *packet)
 
 const InterfaceEntry *IPv4::getSourceInterfaceFrom(cPacket *packet)
 {
-    cGate *g = packet->getArrivalGate();
-    return g ? ift->getInterfaceByNetworkLayerGateIndex(g->getIndex()) : nullptr;
+    Ieee802Ctrl *controlInfo = dynamic_cast<Ieee802Ctrl *>(packet->getControlInfo());
+    return controlInfo != nullptr ? ift->getInterfaceById(controlInfo->getInterfaceId()) : nullptr;
 }
 
 void IPv4::handleIncomingDatagram(IPv4Datagram *datagram, const InterfaceEntry *fromIE)
@@ -909,6 +909,7 @@ void IPv4::sendPacketToIeee802NIC(cPacket *packet, const InterfaceEntry *ie, con
     Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     controlInfo->setDest(macAddress);
     controlInfo->setEtherType(etherType);
+    controlInfo->setInterfaceId(ie->getInterfaceId());
     packet->setControlInfo(controlInfo);
 
     sendPacketToNIC(packet, ie);
