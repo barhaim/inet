@@ -90,8 +90,8 @@ module IPv4NetworkLayer like INetworkLayer
             ip.transportOut++ --> { @display("m=n"); } --> transportOut[i];
         }
 
-        ip.transportOut++ --> icmp.localIn;
-        ip.transportIn++ <-- icmp.sendOut;
+        ip.transportOut++ --> icmp.ipIn;
+        ip.transportIn++ <-- icmp.ipOut;
 
         ip.transportOut++ --> igmp.ipIn;
         ip.transportIn++ <-- igmp.ipOut;
