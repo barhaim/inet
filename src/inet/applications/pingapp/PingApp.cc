@@ -19,6 +19,9 @@
 #include <iostream>
 
 #include "inet/applications/pingapp/PingApp.h"
+#include "inet/networklayer/ipv4/ICMPMessage.h"
+#include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
+#include "inet/networklayer/common/IPProtocolId_m.h"
 
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/applications/pingapp/PingPayload_m.h"
@@ -104,8 +107,13 @@ void PingApp::handleMessage(cMessage *msg)
         if (isEnabled())
             scheduleNextPingRequest(simTime());
     }
-    else
-        processPingResponse(check_and_cast<PingPayload *>(msg));
+    else {
+        ICMPMessage *icmpMessage = check_and_cast<ICMPMessage *>(msg);
+        PingPayload *pingPayload = check_and_cast<PingPayload *>(icmpMessage->decapsulate());
+        pingPayload->setControlInfo(icmpMessage->removeControlInfo());
+        processPingResponse(pingPayload);
+        delete icmpMessage;
+    }
 
     if (hasGUI()) {
         char buf[40];
@@ -180,6 +188,8 @@ bool PingApp::isEnabled()
 void PingApp::sendPingRequest()
 {
     if (destAddr.isUnspecified()) {
+        socket.setOutputGate(gate("socketOut"));
+        socket.bind(IP_PROT_ICMP);
         srcAddr = L3AddressResolver().resolve(par("srcAddr"));
         destAddr = L3AddressResolver().resolve(par("destAddr"));
         EV_INFO << "Starting up with destination = " << destAddr << ", source = " << srcAddr << ".\n";
@@ -210,10 +220,16 @@ void PingApp::sendToICMP(PingPayload *msg, const L3Address& destAddr, const L3Ad
     controlInfo->setDestinationAddress(destAddr);
     controlInfo->setHopLimit(hopLimit);
     // TODO: remove
-    controlInfo->setTransportProtocol(1);    // IP_PROT_ICMP);
-    msg->setControlInfo(dynamic_cast<cObject *>(controlInfo));
+    controlInfo->setTransportProtocol(IP_PROT_ICMP);
     EV_INFO << "Sending ping request #" << msg->getSeqNo() << " to lower layer.\n";
-    send(msg, "pingOut");
+
+    ICMPMessage *request = new ICMPMessage(msg->getName());
+    request->setByteLength(4);
+    request->setType(ICMP_ECHO_REQUEST);
+    request->encapsulate(msg);
+    request->setControlInfo(dynamic_cast<cObject *>(controlInfo));
+
+    socket.send(request);
 }
 
 void PingApp::processPingResponse(PingPayload *msg)
