@@ -221,7 +221,7 @@ void PingTestApp::sendToICMP(cMessage *msg, const L3Address& destAddr, const L3A
     // TODO: remove
     controlInfo->setTransportProtocol(1);    // IP_PROT_ICMP);
     msg->setControlInfo(dynamic_cast<cObject *>(controlInfo));
-    send(msg, "pingOut");
+    send(msg, "socketOut");
 }
 
 void PingTestApp::processPingResponse(PingPayload *msg)
