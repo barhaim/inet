@@ -22,6 +22,7 @@
 #include "inet/networklayer/ipv4/IPv4.h"
 
 #include "inet/common/ProtocolCommand.h"
+#include "inet/networklayer/common/IPSocketCommand_m.h"
 #include "inet/networklayer/arp/ipv4/ARPPacket_m.h"
 #include "inet/networklayer/contract/IARP.h"
 #include "inet/networklayer/ipv4/ICMPMessage_m.h"
@@ -131,6 +132,20 @@ void IPv4::handleMessage(cMessage *msg)
     else if (dynamic_cast<RegisterInterfaceCommand *>(msg)) {
         delete msg;
     }
+    else if (dynamic_cast<IPSocketBindCommand *>(msg->getControlInfo())) {
+        IPSocketBindCommand *command = dynamic_cast<IPSocketBindCommand *>(msg->getControlInfo());
+        SocketDescriptor *descriptor = new SocketDescriptor(command->getSocketId(), command->getProtoclId());
+        socketIdToSocketDescriptor[command->getSocketId()] = descriptor;
+        protoclIdToSocketDescriptors.insert(std::pair<int, SocketDescriptor *>(command->getProtoclId(), descriptor));
+        delete msg;
+    }
+    else if (dynamic_cast<IPSocketCloseCommand *>(msg->getControlInfo())) {
+        IPSocketCloseCommand *command = dynamic_cast<IPSocketCloseCommand *>(msg->getControlInfo());
+        auto it = socketIdToSocketDescriptor.find(command->getSocketId());
+        if (it != socketIdToSocketDescriptor.end()) {
+            delete it->second;
+            socketIdToSocketDescriptor.erase(it);
+        }
         delete msg;
     }
     else if (!msg->isSelfMessage() && msg->getArrivalGate()->isName("arpIn"))
