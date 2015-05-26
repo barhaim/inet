@@ -629,15 +629,26 @@ void IPv4::reassembleAndDeliverFinish(IPv4Datagram *datagram)
 {
     // decapsulate and send on appropriate output gate
     int protocol = datagram->getTransportProtocol();
-
+    cPacket *packet = decapsulate(datagram);
+    // deliver to sockets
+    IPv4ControlInfo *controlInfo = check_and_cast<IPv4ControlInfo *>(packet->getControlInfo());
+    auto lowerBound = protoclIdToSocketDescriptors.lower_bound(protocol);
+    auto upperBound = protoclIdToSocketDescriptors.upper_bound(protocol);
+    for (auto it = lowerBound; it != upperBound; it++) {
+        IPv4ControlInfo *controlInfoCopy = controlInfo->dup();
+        controlInfoCopy->setSocketId(it->second->socketId);
+        cPacket *packetCopy = packet->dup();
+        packetCopy->setControlInfo(controlInfoCopy);
+        send(packetCopy, "transportOut", 0);
+    }
     if (protocol == IP_PROT_ICMP) {
         // incoming ICMP packets are handled specially
-        handleIncomingICMP(check_and_cast<ICMPMessage *>(decapsulate(datagram)));
+        handleIncomingICMP(check_and_cast<ICMPMessage *>(packet));
         numLocalDeliver++;
     }
     else if (protocol == IP_PROT_IP) {
         // tunnelled IP packets are handled separately
-        send(decapsulate(datagram), "preRoutingOut");    //FIXME There is no "preRoutingOut" gate in the IPv4 module.
+        send(packet, "preRoutingOut");    //FIXME There is no "preRoutingOut" gate in the IPv4 module.
     }
     else {
         int gateindex = mapping.findOutputGateForProtocol(protocol);
@@ -645,7 +656,7 @@ void IPv4::reassembleAndDeliverFinish(IPv4Datagram *datagram)
         if (gateindex >= 0) {
             cGate *outGate = gate("transportOut", gateindex);
             if (outGate->isPathOK()) {
-                send(decapsulate(datagram), outGate);
+                send(packet, outGate);
                 numLocalDeliver++;
                 return;
             }
@@ -918,7 +929,7 @@ void IPv4::sendPacketToIeee802NIC(cPacket *packet, const InterfaceEntry *ie, con
 void IPv4::sendPacketToNIC(cPacket *packet, const InterfaceEntry *ie)
 {
     EV_INFO << "Sending " << packet << " to output interface = " << ie->getName() << ".\n";
-    send(packet, queueOutGateBaseId + ie->getNetworkLayerGateIndex());
+    send(packet, queueOutGateBaseId);
 }
 
 // NetFilter:
