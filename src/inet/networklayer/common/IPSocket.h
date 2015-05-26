@@ -19,24 +19,26 @@
 #define __INET_IPSOCKET_H
 
 #include "inet/common/INETDefs.h"
-#include "inet/networklayer/common/IPProtocolId_m.h"
 
 namespace inet {
 
-/**
- * TODO
- */
 class IPSocket
 {
-  private:
+  protected:
+    int socketId;
     cGate *gateToIP;
 
   protected:
     void sendToIP(cMessage *message);
 
   public:
-    IPSocket(cGate *gateToIP = nullptr) { this->gateToIP = gateToIP; }
+    IPSocket(cGate *gateToIP = nullptr);
     virtual ~IPSocket() {}
+
+    /**
+     * Returns the internal socket Id.
+     */
+    int getSocketId() const { return socketId; }
 
     /**
      * Sets the gate on which to send to IP. Must be invoked before socket
@@ -45,9 +47,20 @@ class IPSocket
     void setOutputGate(cGate *gateToIP) { this->gateToIP = gateToIP; }
 
     /**
-     * Registers the given IP protocol to the connected gate.
+     * Bind the socket to a protocol.
      */
-    void registerProtocol(int protocol);
+    void bind(int protocolId);
+
+    /**
+     * Sends a data packet.
+     */
+    void send(cPacket *msg);
+
+    /**
+     * Unbinds the socket. Once closed, a closed socket may be bound to another
+     * (or the same) protocol, and reused.
+     */
+    void close();
 };
 
 } // namespace inet

@@ -16,26 +16,45 @@
 //
 
 #include "inet/networklayer/common/IPSocket.h"
-#include "inet/networklayer/common/IPProtocolId_m.h"
-#include "inet/networklayer/contract/NetworkProtocolCommand_m.h"
+#include "inet/networklayer/common/IPSocketCommand_m.h"
 
 namespace inet {
 
-void IPSocket::registerProtocol(int protocol)
+IPSocket::IPSocket(cGate *gateToIP) :
+    socketId(getEnvir()->getUniqueNumber()),
+    gateToIP(gateToIP)
 {
-    if (gateToIP && gateToIP->isConnected()) {
-        RegisterTransportProtocolCommand *message = new RegisterTransportProtocolCommand();
-        message->setProtocol(protocol);
-        sendToIP(message);
-    }
 }
 
 void IPSocket::sendToIP(cMessage *message)
 {
     if (!gateToIP)
-        throw cRuntimeError("IPSocket: setOutputGate() must be invoked before socket can be used");
-
+        throw cRuntimeError("IPSocket: setOutputGate() must be invoked before the socket can be used");
     check_and_cast<cSimpleModule *>(gateToIP->getOwnerModule())->send(message, gateToIP);
+}
+
+void IPSocket::bind(int protocolId)
+{
+    IPSocketBindCommand *command = new IPSocketBindCommand();
+    command->setSocketId(socketId);
+    command->setProtoclId(protocolId);
+    cMessage *bind = new cMessage("bind");
+    bind->setControlInfo(command);
+    sendToIP(bind);
+}
+
+void IPSocket::send(cPacket *msg)
+{
+    sendToIP(msg);
+}
+
+void IPSocket::close()
+{
+    IPSocketCloseCommand *command = new IPSocketCloseCommand();
+    command->setSocketId(socketId);
+    cMessage *close = new cMessage("close");
+    close->setControlInfo(command);
+    sendToIP(close);
 }
 
 } // namespace inet
