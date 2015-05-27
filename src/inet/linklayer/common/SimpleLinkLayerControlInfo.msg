@@ -12,7 +12,7 @@ class SimpleLinkLayerControlInfo
 
     MACAddress src;  // can be left empty when sending
     MACAddress dest;
-    int protocolId = -1;
+    int protocol = -1;
     int interfaceId = -1;
     int socketId = -1;
 }
