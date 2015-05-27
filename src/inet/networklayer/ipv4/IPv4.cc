@@ -22,11 +22,12 @@
 #include "inet/networklayer/ipv4/IPv4.h"
 
 #include "inet/common/ProtocolCommand.h"
+#include "inet/linklayer/common/Ieee802Ctrl.h"
+#include "inet/linklayer/common/SimpleLinkLayerControlInfo.h"
 #include "inet/networklayer/common/IPSocketCommand_m.h"
 #include "inet/networklayer/arp/ipv4/ARPPacket_m.h"
 #include "inet/networklayer/contract/IARP.h"
 #include "inet/networklayer/ipv4/ICMPMessage_m.h"
-#include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/networklayer/ipv4/IIPv4RoutingTable.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/ipv4/IPv4Datagram.h"
@@ -184,7 +185,7 @@ void IPv4::endService(cPacket *packet)
 
 const InterfaceEntry *IPv4::getSourceInterfaceFrom(cPacket *packet)
 {
-    Ieee802Ctrl *controlInfo = dynamic_cast<Ieee802Ctrl *>(packet->getControlInfo());
+    IMACProtocolControlInfo *controlInfo = dynamic_cast<IMACProtocolControlInfo *>(packet->getControlInfo());
     return controlInfo != nullptr ? ift->getInterfaceById(controlInfo->getInterfaceId()) : nullptr;
 }
 
@@ -831,6 +832,11 @@ void IPv4::sendDatagramToOutput(IPv4Datagram *datagram, const InterfaceEntry *ie
     {
         bool isIeee802Lan = ie->isBroadcast() && !ie->getMacAddress().isUnspecified();    // we only need/can do ARP on IEEE 802 LANs
         if (!isIeee802Lan) {
+            delete datagram->removeControlInfo();
+            SimpleLinkLayerControlInfo *controlInfo = new SimpleLinkLayerControlInfo();
+            controlInfo->setProtocol(ETHERTYPE_IPv4);
+            controlInfo->setInterfaceId(ie->getInterfaceId());
+            datagram->setControlInfo(controlInfo);
             sendPacketToNIC(datagram, ie);
         }
         else {
