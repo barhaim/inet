@@ -42,6 +42,10 @@ void PassiveQueueBase::initialize()
 
 void PassiveQueueBase::handleMessage(cMessage *msg)
 {
+    if (!msg->isPacket()) {
+        sendOut(msg);
+        return;
+    }
     numQueueReceived++;
 
     emit(rcvdPkSignal, msg);
