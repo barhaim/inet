@@ -19,6 +19,9 @@
 
 cplusplus {{
 #include "inet/networklayer/common/L3Address.h"
+#include "inet/networklayer/common/IPProtocolId_m.h"
+#include "inet/transportlayer/contract/ITransportProtocolControlInfo.h"
+#include "inet/applications/contract/ISocketControlInfo.h"
 }}
 
 namespace inet;
@@ -66,7 +69,9 @@ enum UDPStatusInd
 //
 class UDPControlInfo
 {
-    int sockId = -1;  // must uniquely identify the socket in the ~UDP module
+    @implements(ITransportLayerControlInfo, ISocketControlInfo);
+    int transportProtocol = IP_PROT_UDP;
+    int socketId = -1;  // must uniquely identify the socket in the ~UDP module
 }
 
 //
