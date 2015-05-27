@@ -117,7 +117,7 @@ cPacket *UDPBasicBurst::createPacket()
 
 void UDPBasicBurst::processStart()
 {
-    socket.setOutputGate(gate("udpOut"));
+    socket.setOutputGate(gate("socketOut"));
     socket.bind(localPort);
 
     const char *destAddrs = par("destAddresses");
