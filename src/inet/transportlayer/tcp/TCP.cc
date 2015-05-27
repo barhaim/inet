@@ -98,7 +98,9 @@ void TCP::initialize(int stage)
     else if (stage == INITSTAGE_TRANSPORT_LAYER) {
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
-        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_TCP), "ipOut");
+        RegisterProtocolCommand *command = new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_TCP);
+        send(command->dup(), "ipOut");
+        send(command, "appOut", 0);
     }
 }
 
@@ -176,7 +178,7 @@ void TCP::handleMessage(cMessage *msg)
     else {    // must be from app
         TCPCommand *controlInfo = check_and_cast<TCPCommand *>(msg->getControlInfo());
         int appGateIndex = msg->getArrivalGate()->getIndex();
-        int connId = controlInfo->getConnId();
+        int connId = controlInfo->getSocketId();
 
         TCPConnection *conn = findConnForApp(appGateIndex, connId);
 

@@ -82,15 +82,21 @@ void ApplicationToTransport::handleMessage(cMessage *message)
                 throw cRuntimeError("Unknown socket");
         }
         else {
-            RegisterProtocolCommand *command = dynamic_cast<RegisterProtocolCommand *>(message);
-            if (command != nullptr) {
-                protocolToTransportGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
-                delete message;
+            int socketId = computeSocketId(message);
+            auto it = socketIdToApplicationGateIndex.find(socketId);
+            if (it != socketIdToApplicationGateIndex.end())
+                send(message, "applicationOut", it->second);
+            else {
+                RegisterProtocolCommand *command = dynamic_cast<RegisterProtocolCommand *>(message);
+                if (command != nullptr) {
+                    protocolToTransportGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
+                    delete message;
+                }
+                else if (dynamic_cast<RegisterInterfaceCommand *>(message))
+                    delete message;
+                else
+                    throw cRuntimeError("Unknown message");
             }
-            else if (dynamic_cast<RegisterInterfaceCommand *>(message))
-                delete message;
-            else
-                throw cRuntimeError("Unknown message");
         }
     }
     else

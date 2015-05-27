@@ -18,6 +18,9 @@
 
 cplusplus {{
 #include "inet/networklayer/common/L3Address.h"
+#include "inet/networklayer/common/IPProtocolId_m.h"
+#include "inet/transportlayer/contract/ITransportProtocolControlInfo.h"
+#include "inet/applications/contract/ISocketControlInfo.h"
 }}
 
 namespace inet;
@@ -89,7 +92,9 @@ enum TCPErrorCode
 //
 class TCPCommand
 {
-    int connId = -1;   // identifies the socket within the application
+    @implements(ITransportLayerControlInfo, ISocketControlInfo);
+    int transportProtocol = IP_PROT_TCP;
+    int socketId = -1;   // identifies the socket within the application
     int userId = -1;   // id than can be freely used by the app
 }
 

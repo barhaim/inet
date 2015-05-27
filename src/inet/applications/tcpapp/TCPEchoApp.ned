@@ -15,11 +15,9 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-
 package inet.applications.tcpapp;
 
-import inet.applications.contract.ITCPApp;
-
+import inet.applications.contract.IApp;
 
 //
 // Accepts any number of incoming TCP connections, and sends back the
@@ -63,7 +61,7 @@ import inet.applications.contract.ITCPApp;
 //
 // Compatible with both ~IPv4 and ~IPv6.
 //
-simple TCPEchoApp like ITCPApp
+simple TCPEchoApp like IApp
 {
     parameters:
         string localAddress = default(""); // local address; may be left empty ("")
@@ -78,7 +76,6 @@ simple TCPEchoApp like ITCPApp
         @statistic[sentPk](title="packets sent"; source=sentPk; record=count,"sum(packetBytes)","vector(packetBytes)"; interpolationmode=none);
         @statistic[endToEndDelay](title="end-to-end delay"; source="messageAge(rcvdPk)"; unit=s; record=histogram,vector; interpolationmode=none);
     gates:
-        input tcpIn @labels(TCPCommand/up);
-        output tcpOut @labels(TCPCommand/down);
+        input socketIn @labels(TCPCommand/up);
+        output socketOut @labels(TCPCommand/down);
 }
-

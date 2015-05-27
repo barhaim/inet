@@ -41,7 +41,7 @@ void TCPEchoApp::initialize(int stage)
         WATCH(bytesRcvd);
         WATCH(bytesSent);
 
-        socket.setOutputGate(gate("tcpOut"));
+        socket.setOutputGate(gate("socketOut"));
         socket.readDataTransferModePar(*this);
 
         nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
@@ -78,7 +78,7 @@ void TCPEchoApp::sendDown(cMessage *msg)
         emit(sentPkSignal, (cPacket *)msg);
     }
 
-    send(msg, "tcpOut");
+    send(msg, "socketOut");
 }
 
 void TCPEchoApp::handleMessage(cMessage *msg)
@@ -111,7 +111,7 @@ void TCPEchoApp::handleMessage(cMessage *msg)
             pkt->setKind(TCP_C_SEND);
             TCPCommand *ind = check_and_cast<TCPCommand *>(pkt->removeControlInfo());
             TCPSendCommand *cmd = new TCPSendCommand();
-            cmd->setConnId(ind->getConnId());
+            cmd->setSocketId(ind->getSocketId());
             pkt->setControlInfo(cmd);
             delete ind;
 

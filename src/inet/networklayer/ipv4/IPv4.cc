@@ -652,15 +652,11 @@ void IPv4::reassembleAndDeliverFinish(IPv4Datagram *datagram)
         send(packet, "preRoutingOut");    //FIXME There is no "preRoutingOut" gate in the IPv4 module.
     }
     else {
-        int gateindex = mapping.findOutputGateForProtocol(protocol);
-        // check if the transportOut port are connected, otherwise discard the packet
-        if (gateindex >= 0) {
-            cGate *outGate = gate("transportOut", gateindex);
-            if (outGate->isPathOK()) {
-                send(packet, outGate);
-                numLocalDeliver++;
-                return;
-            }
+        cGate *outGate = gate("transportOut", 0);
+        if (outGate->isPathOK()) {
+            send(packet, outGate);
+            numLocalDeliver++;
+            return;
         }
 
         EV_ERROR << "Transport protocol ID=" << protocol << " not connected, discarding packet\n";
