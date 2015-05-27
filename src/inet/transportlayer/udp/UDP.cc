@@ -142,7 +142,9 @@ void UDP::initialize(int stage)
     else if (stage == INITSTAGE_TRANSPORT_LAYER) {
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
-        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_UDP), "ipOut");
+        RegisterProtocolCommand *command = new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_UDP);
+        send(command->dup(), "ipOut");
+        send(command, "appOut", 0);
     }
 }
 
