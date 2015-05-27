@@ -43,8 +43,10 @@ void ICMP::handleMessage(cMessage *msg)
 {
     cGate *arrivalGate = msg->getArrivalGate();
 
+    if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
     // process arriving ICMP message
-    if (!strcmp(arrivalGate->getName(), "ipIn")) {
+    else if (!strcmp(arrivalGate->getName(), "ipIn")) {
         EV_INFO << "Received " << msg << " from network protocol.\n";
         processICMPMessage(check_and_cast<ICMPMessage *>(msg));
         return;

@@ -23,6 +23,7 @@
 
 #include "inet/common/INETUtils.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/common/queue/IPassiveQueue.h"
 #include "inet/common/NotifierConsts.h"
@@ -322,7 +323,9 @@ void PPP::handleMessage(cMessage *msg)
     }
     else {    // arrived on gate "netwIn"
         EV_INFO << "Received " << msg << " from upper layer.\n";
-        if (datarateChannel == nullptr) {
+        if (dynamic_cast<RegisterProtocolCommand *>(msg))
+            delete msg;
+        else if (datarateChannel == nullptr) {
             EV_WARN << "Interface is not connected, dropping packet " << msg << endl;
             numDroppedIfaceDown++;
             emit(dropPkIfaceDownSignal, msg);
