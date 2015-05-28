@@ -21,9 +21,9 @@ namespace inet;
 message RegisterProtocolCommand;
 
 enum ProtocolLayer {
-    TRANSPORT_LAYER_PROTOCOL = 0;
-    NETWORK_LAYER_PROTOCOL = 1;
     LINK_LAYER_PROTOCOL = 2;
+    NETWORK_LAYER_PROTOCOL = 3;
+    TRANSPORT_LAYER_PROTOCOL = 4;
 };
 
 message RegisterProtocolCommand

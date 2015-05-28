@@ -18,6 +18,7 @@
 
 #include <iostream>
 
+#include "inet/common/ProtocolCommand.h"
 #include "inet/applications/pingapp/PingApp.h"
 #include "inet/networklayer/ipv4/ICMPMessage.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
@@ -102,7 +103,11 @@ void PingApp::handleMessage(cMessage *msg)
         delete msg;
         return;
     }
-    if (msg == timer) {
+    if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
+    else if (msg == timer) {
         sendPingRequest();
         if (isEnabled())
             scheduleNextPingRequest(simTime());

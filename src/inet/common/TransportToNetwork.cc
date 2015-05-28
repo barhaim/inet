@@ -59,8 +59,8 @@ void TransportToNetwork::handleMessage(cMessage *message)
     if (message->arrivedOn("transportIn")) {
         if (message->isPacket()) {
             auto protocol = computeLowerProtocol(message);
-            auto it = protocolToNetworkGateIndex.find(protocol);
-            if (it != protocolToNetworkGateIndex.end())
+            auto it = protocolToLowerGateIndex.find(protocol);
+            if (it != protocolToLowerGateIndex.end())
                 send(message, "networkOut", it->second);
             else
                 throw cRuntimeError("Unknown protocol");
@@ -68,7 +68,7 @@ void TransportToNetwork::handleMessage(cMessage *message)
         else {
             RegisterProtocolCommand *command = dynamic_cast<RegisterProtocolCommand *>(message);
             if (command != nullptr) {
-                protocolToTransportGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
+                protocolToUpperGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
                 int size = gateSize("networkOut");
                 for (int i = 0; i < size; i++)
                     send(message->dup(), "networkOut", i);
@@ -79,8 +79,8 @@ void TransportToNetwork::handleMessage(cMessage *message)
                 if (socketId != -1)
                     socketIdToTransportGateIndex[socketId] = message->getArrivalGate()->getIndex();
                 auto protocol = computeLowerProtocol(message);
-                auto it = protocolToNetworkGateIndex.find(protocol);
-                if (it != protocolToNetworkGateIndex.end())
+                auto it = protocolToLowerGateIndex.find(protocol);
+                if (it != protocolToLowerGateIndex.end())
                     send(message, "networkOut", it->second);
                 else
                     throw cRuntimeError("Unknown protocol");
@@ -99,8 +99,8 @@ void TransportToNetwork::handleMessage(cMessage *message)
             }
             else {
                 auto protocol = computeUpperProtocol(message);
-                auto it = protocolToTransportGateIndex.find(protocol);
-                if (it != protocolToTransportGateIndex.end())
+                auto it = protocolToUpperGateIndex.find(protocol);
+                if (it != protocolToUpperGateIndex.end())
                     send(message, "transportOut", it->second);
                 else
                     throw cRuntimeError("Unknown protocol");
@@ -109,7 +109,7 @@ void TransportToNetwork::handleMessage(cMessage *message)
         else {
             RegisterProtocolCommand *command = dynamic_cast<RegisterProtocolCommand *>(message);
             if (command != nullptr) {
-                protocolToNetworkGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
+                protocolToLowerGateIndex[std::pair<int, int>(command->getLayer(), command->getProtocol())] = message->getArrivalGate()->getIndex();
                 int size = gateSize("transportOut");
                 for (int i = 0; i < size; i++)
                     send(message->dup(), "transportOut", i);

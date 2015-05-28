@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
+#include "inet/common/ProtocolCommand.h"
 #include "inet/applications/udpapp/UDPBasicBurst.h"
-
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/common/ModuleAccess.h"
@@ -171,7 +171,11 @@ void UDPBasicBurst::processStop()
 
 void UDPBasicBurst::handleMessageWhenUp(cMessage *msg)
 {
-    if (msg->isSelfMessage()) {
+    if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
+    else if (msg->isSelfMessage()) {
         switch (msg->getKind()) {
             case START:
                 processStart();

@@ -17,7 +17,7 @@
 
 package inet.node.inet;
 
-import inet.common.NetworkToLink;
+import inet.common.PacketDispatcher;
 import inet.common.lifecycle.NodeStatus;
 import inet.common.packet.PcapRecorder;
 import inet.linklayer.contract.IExternalNic;
@@ -35,7 +35,6 @@ import inet.networklayer.ipv6.IPv6NetworkLayer;
 import inet.networklayer.ipv6.IPv6RoutingTable;
 import inet.power.contract.IEnergyGenerator;
 import inet.power.contract.IEnergyStorage;
-
 
 //
 // Contains the common lower layers (linklayer and networklayer)
@@ -136,7 +135,7 @@ module NodeBase like INode
             parameters:
                 @display("p=600,500;q=queue");
         }
-        nl: NetworkToLink {
+        nl: PacketDispatcher {
             parameters:
                 //                @display("i=misc/node;is=vs;p=550,600");
                 @display("b=580,5,,,,1;p=550,600");
@@ -167,47 +166,47 @@ module NodeBase like INode
         }
 
     connections allowunconnected:
-        nl.ifOut++ --> lo0.upperLayerIn if hasLo;
-        lo0.upperLayerOut --> nl.ifIn++ if hasLo;
+        nl.lowerLayerOut++ --> lo0.upperLayerIn if hasLo;
+        lo0.upperLayerOut --> nl.lowerLayerIn++ if hasLo;
 
         for i=0..sizeof(radioIn)-1 {
             radioIn[i] --> { @display("m=s"); } --> wlan[i].radioIn;
-            wlan[i].upperLayerOut --> nl.ifIn++;
-            wlan[i].upperLayerIn <-- nl.ifOut++;
+            wlan[i].upperLayerOut --> nl.lowerLayerIn++;
+            wlan[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
         for i=0..sizeof(ethg)-1 {
             ethg[i] <--> { @display("m=s"); } <--> eth[i].phys;
-            eth[i].upperLayerOut --> nl.ifIn++;
-            eth[i].upperLayerIn <-- nl.ifOut++;
+            eth[i].upperLayerOut --> nl.lowerLayerIn++;
+            eth[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
         for i=0..sizeof(pppg)-1 {
             pppg[i] <--> { @display("m=s"); } <--> ppp[i].phys;
-            ppp[i].upperLayerOut --> nl.ifIn++;
-            ppp[i].upperLayerIn <-- nl.ifOut++;
+            ppp[i].upperLayerOut --> nl.lowerLayerIn++;
+            ppp[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
         for i=0..numExtInterfaces-1 {
-            ext[i].upperLayerOut --> nl.ifIn++;
-            ext[i].upperLayerIn <-- nl.ifOut++;
+            ext[i].upperLayerOut --> nl.lowerLayerIn++;
+            ext[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
         for i=0..numTunInterfaces-1 {
-            tun[i].upperLayerOut --> nl.ifIn++;
-            tun[i].upperLayerIn <-- nl.ifOut++;
+            tun[i].upperLayerOut --> nl.lowerLayerIn++;
+            tun[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
-        ipv4.ifIn++ <-- nl.networkOut++ if hasIpv4;
-        ipv4.ifOut++ --> nl.networkIn++ if hasIpv4;
+        ipv4.ifIn++ <-- nl.upperLayerOut++ if hasIpv4;
+        ipv4.ifOut++ --> nl.upperLayerIn++ if hasIpv4;
 
-        ipv4.arpIn <-- nl.networkOut++ if hasIpv4;
-        ipv4.arpOut --> nl.networkIn++ if hasIpv4;
+        ipv4.arpIn <-- nl.upperLayerOut++ if hasIpv4;
+        ipv4.arpOut --> nl.upperLayerIn++ if hasIpv4;
 
-        ipv6.ifIn++ <-- nl.networkOut++ if hasIpv6;
-        ipv6.ifOut++ --> nl.networkIn++ if hasIpv6;
+        ipv6.ifIn++ <-- nl.upperLayerOut++ if hasIpv6;
+        ipv6.ifOut++ --> nl.upperLayerIn++ if hasIpv6;
 
-        gn.ifIn++ <-- nl.networkOut++ if hasGn;
-        gn.ifOut++ --> nl.networkIn++ if hasGn;
+        gn.ifIn++ <-- nl.upperLayerOut++ if hasGn;
+        gn.ifOut++ --> nl.upperLayerIn++ if hasGn;
 }
 

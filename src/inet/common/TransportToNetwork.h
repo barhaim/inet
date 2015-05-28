@@ -37,8 +37,8 @@ class INET_API TransportToNetwork : public cSimpleModule
 {
     protected:
         std::map<int, int> socketIdToTransportGateIndex;
-        std::map<std::pair<int, int>, int> protocolToTransportGateIndex;
-        std::map<std::pair<int, int>, int> protocolToNetworkGateIndex;
+        std::map<std::pair<int, int>, int> protocolToUpperGateIndex;
+        std::map<std::pair<int, int>, int> protocolToLowerGateIndex;
 
     protected:
         virtual void handleMessage(cMessage *message) override;

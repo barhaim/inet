@@ -19,8 +19,7 @@
 package inet.node.inet;
 
 import inet.applications.contract.IApp;
-import inet.common.ApplicationToTransport;
-import inet.common.TransportToNetwork;
+import inet.common.PacketDispatcher;
 import inet.transportlayer.contract.ISCTP;
 import inet.transportlayer.contract.ITCP;
 import inet.transportlayer.contract.IUDP;
@@ -71,7 +70,7 @@ module StandardHost extends NodeBase
             parameters:
                 @display("p=550,100,row,100");
         }
-        at: ApplicationToTransport {
+        at: PacketDispatcher {
             parameters:
                 @display("b=580,5,,,,1;p=550,200");
         }
@@ -87,49 +86,49 @@ module StandardHost extends NodeBase
             parameters:
                 @display("p=600,300");
         }
-        tn: TransportToNetwork {
+        tn: PacketDispatcher {
             parameters:
                 @display("b=580,5,,,,1;p=550,400");
         }
     connections allowunconnected:
-        at.transportOut++ --> udp.appIn++ if hasUdp;
-        at.transportIn++ <-- udp.appOut++ if hasUdp;
+        at.lowerLayerOut++ --> udp.appIn++ if hasUdp;
+        at.lowerLayerIn++ <-- udp.appOut++ if hasUdp;
 
-        at.transportOut++ --> tcp.appIn++ if hasTcp;
-        at.transportIn++ <-- tcp.appOut++ if hasTcp;
+        at.lowerLayerOut++ --> tcp.appIn++ if hasTcp;
+        at.lowerLayerIn++ <-- tcp.appOut++ if hasTcp;
 
-        at.transportOut++ --> sctp.from_appl++ if hasSctp;
-        at.transportIn++ <-- sctp.to_appl++ if hasSctp;
+        at.lowerLayerOut++ --> sctp.from_appl++ if hasSctp;
+        at.lowerLayerIn++ <-- sctp.to_appl++ if hasSctp;
 
-        at.transportOut++ --> tn.transportIn++;
-        at.transportIn++ <-- tn.transportOut++;
+        at.lowerLayerOut++ --> tn.upperLayerIn++;
+        at.lowerLayerIn++ <-- tn.upperLayerOut++;
 
-        tn.networkOut++ --> ipv4.transportIn++ if hasIpv4;
-        tn.networkIn++ <-- ipv4.transportOut++ if hasIpv4;
+        tn.lowerLayerOut++ --> ipv4.transportIn++ if hasIpv4;
+        tn.lowerLayerIn++ <-- ipv4.transportOut++ if hasIpv4;
 
-        tn.networkOut++ --> ipv4.igmpIn if hasIpv4;
-        tn.networkIn++ <-- ipv4.igmpOut if hasIpv4;
+        tn.lowerLayerOut++ --> ipv4.igmpIn if hasIpv4;
+        tn.lowerLayerIn++ <-- ipv4.igmpOut if hasIpv4;
 
-        tn.networkOut++ --> ipv6.transportIn++ if hasIpv6;
-        tn.networkIn++ <-- ipv6.transportOut++ if hasIpv6;
+        tn.lowerLayerOut++ --> ipv6.transportIn++ if hasIpv6;
+        tn.lowerLayerIn++ <-- ipv6.transportOut++ if hasIpv6;
 
-        tn.networkOut++ --> gn.transportIn++ if hasGn;
-        tn.networkIn++ <-- gn.transportOut++ if hasGn;
+        tn.lowerLayerOut++ --> gn.transportIn++ if hasGn;
+        tn.lowerLayerIn++ <-- gn.transportOut++ if hasGn;
 
-        tn.networkOut++ --> nl.networkIn++;
-        tn.networkIn++ <-- nl.networkOut++;
+        tn.lowerLayerOut++ --> nl.upperLayerIn++;
+        tn.lowerLayerIn++ <-- nl.upperLayerOut++;
 
         for i=0..numApps-1 {
-            app[i].socketOut --> at.applicationIn++;
-            app[i].socketIn <-- at.applicationOut++;
+            app[i].socketOut --> at.upperLayerIn++;
+            app[i].socketIn <-- at.upperLayerOut++;
         }
 
-        udp.ipOut --> tn.transportIn++ if hasUdp;
-        udp.ipIn <-- tn.transportOut++ if hasUdp;
+        udp.ipOut --> tn.upperLayerIn++ if hasUdp;
+        udp.ipIn <-- tn.upperLayerOut++ if hasUdp;
 
-        tcp.ipOut --> tn.transportIn++ if hasTcp;
-        tcp.ipIn <-- tn.transportOut++ if hasTcp;
+        tcp.ipOut --> tn.upperLayerIn++ if hasTcp;
+        tcp.ipIn <-- tn.upperLayerOut++ if hasTcp;
 
-        sctp.to_ip --> tn.transportIn++ if hasSctp;
-        tn.transportOut++ --> sctp.from_ip if hasSctp;
+        sctp.to_ip --> tn.upperLayerIn++ if hasSctp;
+        tn.upperLayerOut++ --> sctp.from_ip if hasSctp;
 }
