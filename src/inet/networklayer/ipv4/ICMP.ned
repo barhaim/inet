@@ -43,7 +43,7 @@ simple ICMP
     parameters:
         string interfaceTableModule;   // The path to the InterfaceTable module
         string routingTableModule;
-        @display("i=block/control_s");
+        @display("i=block/control");
     gates:
         input ipIn @labels(IPv4ControlInfo/up);  // delivered ICMP packets
         output ipOut @labels(IPv4ControlInfo/down);  // towards network

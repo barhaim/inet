@@ -35,8 +35,8 @@ module WiseRouteNetworkLayer like INetworkLayer
     gates:
         input ifIn @labels(INetworkDatagram);
         output ifOut @labels(INetworkDatagram);
-        input transportIn[] @labels(ITransportPacket/down);
-        output transportOut[] @labels(ITransportPacket/up);
+        input transportIn @labels(ITransportPacket/down);
+        output transportOut @labels(ITransportPacket/up);
 
     submodules:
         arp: GenericARP {
@@ -53,12 +53,8 @@ module WiseRouteNetworkLayer like INetworkLayer
         }
 
     connections allowunconnected:
-        for i=0..sizeof(transportIn)-1 {
-            transportIn[i] --> { @display("m=n"); } --> np.upperLayerIn++;
-        }
-        for i=0..sizeof(transportOut)-1 {
-            np.upperLayerOut++ --> { @display("m=n"); } --> transportOut[i];
-        }
+        np.upperLayerIn++ <-- { @display("m=n"); } <-- transportIn;
+        np.upperLayerOut++ --> { @display("m=n"); } --> transportOut;
 
         np.upperLayerOut++ --> echo.localIn;
         np.upperLayerIn++ <-- echo.sendOut;

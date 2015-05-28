@@ -103,17 +103,17 @@ module StandardHost extends NodeBase
         at.lowerLayerOut++ --> tn.upperLayerIn++;
         at.lowerLayerIn++ <-- tn.upperLayerOut++;
 
-        tn.lowerLayerOut++ --> ipv4.transportIn++ if hasIpv4;
-        tn.lowerLayerIn++ <-- ipv4.transportOut++ if hasIpv4;
+        tn.lowerLayerOut++ --> ipv4.transportIn if hasIpv4;
+        tn.lowerLayerIn++ <-- ipv4.transportOut if hasIpv4;
 
         tn.lowerLayerOut++ --> ipv4.igmpIn if hasIpv4;
         tn.lowerLayerIn++ <-- ipv4.igmpOut if hasIpv4;
 
-        tn.lowerLayerOut++ --> ipv6.transportIn++ if hasIpv6;
-        tn.lowerLayerIn++ <-- ipv6.transportOut++ if hasIpv6;
+        tn.lowerLayerOut++ --> ipv6.transportIn if hasIpv6;
+        tn.lowerLayerIn++ <-- ipv6.transportOut if hasIpv6;
 
-        tn.lowerLayerOut++ --> gn.transportIn++ if hasGn;
-        tn.lowerLayerIn++ <-- gn.transportOut++ if hasGn;
+        tn.lowerLayerOut++ --> gn.transportIn if hasGn;
+        tn.lowerLayerIn++ <-- gn.transportOut if hasGn;
 
         tn.lowerLayerOut++ --> nl.upperLayerIn++;
         tn.lowerLayerIn++ <-- nl.upperLayerOut++;

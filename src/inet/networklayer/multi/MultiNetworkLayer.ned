@@ -95,8 +95,8 @@ module MultiNetworkLayer like INetworkLayer
     gates:
         input ifIn @labels(INetworkDatagram);
         output ifOut @labels(INetworkDatagram);
-        input transportIn[] @labels(IPv4ControlInfo/down);
-        output transportOut[] @labels(IPv4ControlInfo/up);
+        input transportIn @labels(IPv4ControlInfo/down);
+        output transportOut @labels(IPv4ControlInfo/up);
 
     submodules:
         ipv4: <"IPv4NetworkLayer"> like INetworkLayer if enableIPv4 {
@@ -124,16 +124,16 @@ module MultiNetworkLayer like INetworkLayer
     connections allowunconnected:
         // transport
         for i=0..sizeof(transportIn)-1 {
-            upperMultiplexer.transportLowerOut[0+3*i] --> ipv4.transportIn++ if enableIPv4;
-            upperMultiplexer.transportLowerOut[1+3*i] --> ipv6.transportIn++ if enableIPv6;
-            upperMultiplexer.transportLowerOut[2+3*i] --> generic.transportIn++ if enableGeneric;
-            transportIn[i] --> { @display("m=n"); } --> upperMultiplexer.transportUpperIn++;
+            upperMultiplexer.transportLowerOut[0+3*i] --> ipv4.transportIn if enableIPv4;
+            upperMultiplexer.transportLowerOut[1+3*i] --> ipv6.transportIn if enableIPv6;
+            upperMultiplexer.transportLowerOut[2+3*i] --> generic.transportIn if enableGeneric;
+            transportIn --> { @display("m=n"); } --> upperMultiplexer.transportUpperIn++;
         }
         for i=0..sizeof(transportOut)-1 {
-            ipv4.transportOut++ --> upperMultiplexer.transportLowerIn[0+3*i] if enableIPv4;
-            ipv6.transportOut++ --> upperMultiplexer.transportLowerIn[1+3*i] if enableIPv6;
-            generic.transportOut++ --> upperMultiplexer.transportLowerIn[2+3*i] if enableGeneric;
-            upperMultiplexer.transportUpperOut++ --> { @display("m=n"); } --> transportOut[i];
+            ipv4.transportOut --> upperMultiplexer.transportLowerIn[0+3*i] if enableIPv4;
+            ipv6.transportOut --> upperMultiplexer.transportLowerIn[1+3*i] if enableIPv6;
+            generic.transportOut --> upperMultiplexer.transportLowerIn[2+3*i] if enableGeneric;
+            upperMultiplexer.transportUpperOut++ --> { @display("m=n"); } --> transportOut;
         }
 
         // interface

@@ -49,8 +49,8 @@ module IPv6NetworkLayer like INetworkLayer
     gates:
         input ifIn @labels(INetworkDatagram);
         output ifOut @labels(INetworkDatagram);
-        input transportIn[] @labels(IPv4ControlInfo/down);
-        output transportOut[] @labels(IPv4ControlInfo/up);
+        input transportIn @labels(IPv4ControlInfo/down);
+        output transportOut @labels(IPv4ControlInfo/up);
 
     submodules:
         // TODO: rename to ip
@@ -80,12 +80,8 @@ module IPv6NetworkLayer like INetworkLayer
         }
 
     connections allowunconnected:  // FIXME remove 'nocheck'!
-        for i=0..sizeof(transportIn)-1 {
-            transportIn[i] --> { @display("m=n"); } --> ipv6.transportIn++;
-        }
-        for i=0..sizeof(transportOut)-1 {
-            ipv6.transportOut++ --> { @display("m=n"); } --> transportOut[i];
-        }
+        ipv6.transportOut++ --> { @display("m=n"); } --> transportOut;
+        ipv6.transportIn++ <-- { @display("m=n"); } <-- transportIn;
 
         // IPv6 to IPv6 Tunneling
         iptunneling.upperLayerIn <-- ipv6.upperTunnelingOut;

@@ -27,8 +27,8 @@ moduleinterface INetworkLayerUpper
     parameters:
         @display("i=block/fork");
     gates:
-        input transportIn[] @labels(ITransportPacket/down);
-        output transportOut[] @labels(ITransportPacket/up);
+        input transportIn @labels(ITransportPacket/down);
+        output transportOut @labels(ITransportPacket/up);
 }
 
 //

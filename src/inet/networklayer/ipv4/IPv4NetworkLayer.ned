@@ -18,8 +18,9 @@
 
 package inet.networklayer.ipv4;
 
-import inet.networklayer.contract.IARP;
+import inet.common.PacketDispatcher;
 import inet.networklayer.configurator.ipv4.IPv4NodeConfigurator;
+import inet.networklayer.contract.IARP;
 import inet.networklayer.contract.INetworkLayer;
 
 
@@ -46,8 +47,8 @@ module IPv4NetworkLayer like INetworkLayer
     gates:
         input ifIn @labels(INetworkDatagram);
         output ifOut @labels(INetworkDatagram);
-        input transportIn[] @labels(IPv4ControlInfo/down);
-        output transportOut[] @labels(IPv4ControlInfo/up);
+        input transportIn @labels(IPv4ControlInfo/down);
+        output transportOut @labels(IPv4ControlInfo/up);
         input igmpIn;
         output igmpOut;
         input arpIn;
@@ -55,45 +56,49 @@ module IPv4NetworkLayer like INetworkLayer
 
     submodules:
         configurator: IPv4NodeConfigurator {
-            @display("p=39,158");
+            parameters:
+                @display("p=100,50");
+        }
+        igmp: <igmpType> like IIGMP {
+            parameters:
+                @display("p=200,100");
+        }
+        icmp: ICMP {
+            parameters:
+                @display("p=400,100");
+        }
+        errorHandling: ErrorHandling {
+            parameters:
+                @display("p=500,100");
+        }
+        dp: PacketDispatcher {
+            parameters:
+                @display("b=300,5,,,,1;p=300,200");
         }
         ip: IPv4 {
             parameters:
                 useProxyARP = true; // as routes with unspecified next-hop addr are quite common
-                @display("p=85,95;q=queue");
+                @display("p=300,300;q=queue");
         }
         arp: <arpType> like IARP {
             parameters:
-                @display("p=165,120;q=pendingQueue;is=s");
-        }
-        icmp: ICMP {
-            parameters:
-                @display("p=165,70");
-        }
-        igmp: <igmpType> like IIGMP {
-            parameters:
-                @display("p=39,33");
-        }
-        errorHandling: ErrorHandling {
-            parameters:
-                @display("p=239,70");
+                @display("p=400,300;q=pendingQueue");
         }
 
     connections allowunconnected:
-        for i=0..sizeof(transportIn)-1 {
-            transportIn[i] --> { @display("m=n"); } --> ip.transportIn++;
-        }
-        for i=0..sizeof(transportOut)-1 {
-            ip.transportOut++ --> { @display("m=n"); } --> transportOut[i];
-        }
+        dp.upperLayerOut++ --> { @display("m=n"); } --> transportOut;
+        dp.upperLayerIn++ <-- { @display("m=n"); } <-- transportIn;
 
-        ip.transportOut++ --> icmp.ipIn;
-        ip.transportIn++ <-- icmp.ipOut;
+        dp.upperLayerOut++ --> icmp.ipIn;
+        dp.upperLayerIn++ <-- icmp.ipOut;
 
-        ip.transportOut++ --> igmp.ipIn;
-        ip.transportIn++ <-- igmp.ipOut;
+        dp.upperLayerOut++ --> igmp.ipIn;
+        dp.upperLayerIn++ <-- igmp.ipOut;
 
         icmp.errorOut --> errorHandling.in;
+
+        ip.transportOut --> dp.lowerLayerIn++;
+        ip.transportIn <-- dp.lowerLayerOut++;
 
         ip.arpOut --> arp.netwIn;
         ip.arpIn <-- arp.netwOut;

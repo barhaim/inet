@@ -37,8 +37,8 @@ module GenericNetworkLayer like INetworkLayer
     gates:
         input ifIn @labels(INetworkDatagram);
         output ifOut @labels(INetworkDatagram);
-        input transportIn[] @labels(IPv4ControlInfo/down);
-        output transportOut[] @labels(IPv4ControlInfo/up);
+        input transportIn @labels(IPv4ControlInfo/down);
+        output transportOut @labels(IPv4ControlInfo/up);
 
     submodules:
         gnp: GenericNetworkProtocol {
@@ -54,12 +54,8 @@ module GenericNetworkLayer like INetworkLayer
                 @display("p=202,142;q=pendingQueue");
         }
     connections allowunconnected:
-        for i=0..sizeof(transportIn)-1 {
-            transportIn[i] --> { @display("m=n"); } --> gnp.transportIn++;
-        }
-        for i=0..sizeof(transportOut)-1 {
-            gnp.transportOut++ --> { @display("m=n"); } --> transportOut[i];
-        }
+        gnp.transportOut++ --> { @display("m=n"); } --> transportOut;
+        gnp.transportIn++ <-- { @display("m=n"); } <-- transportIn;
 
         gnp.transportOut++ --> echo.localIn;
         gnp.transportIn++ <-- echo.sendOut;
