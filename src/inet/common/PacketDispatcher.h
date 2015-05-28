@@ -34,16 +34,16 @@ class INET_API PacketDispatcher : public cSimpleModule
     protected:
         std::map<int, int> socketIdToUpperLayerGateIndex;
         std::map<int, int> interfaceIdToLowerLayerGateIndex;
-        std::map<std::pair<int, int>, int> protocolIdToUpperLayerGateIndex;
-        std::map<std::pair<int, int>, int> protocolIdToLowerLayerGateIndex;
+        std::map<int, int> protocolIdToUpperLayerGateIndex;
+        std::map<int, int> protocolIdToLowerLayerGateIndex;
 
     protected:
         virtual void handleMessage(cMessage *message) override;
 
         virtual int computeSocketId(cMessage *message);
         virtual int computeInterfaceId(cMessage *message);
-        virtual std::pair<int, int> computeUpperLayerProtocolId(cMessage *message);
-        virtual std::pair<int, int> computeLowerLayerProtocolId(cMessage *message);
+        virtual int computeUpperLayerProtocolId(cMessage *message);
+        virtual int computeLowerLayerProtocolId(cMessage *message);
 
     public:
         PacketDispatcher();
@@ -51,5 +51,5 @@ class INET_API PacketDispatcher : public cSimpleModule
 
 } // namespace inet
 
-#endif // ifndef __INET_TRANSPORTTONETWORK_H
+#endif // ifndef __INET_PACKETDISPATCHER_H
 

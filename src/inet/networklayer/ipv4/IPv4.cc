@@ -100,7 +100,7 @@ void IPv4::initialize(int stage)
     else if (stage == INITSTAGE_NETWORK_LAYER) {
         isUp = isNodeUp();
         RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, ETHERTYPE_IPv4);
-        send(command->dup(), "transportOut", 0);
+        send(command->dup(), "transportOut");
         send(command, "queueOut");
     }
 }
@@ -297,18 +297,18 @@ void IPv4::handleIncomingICMP(ICMPMessage *packet)
         case ICMP_TIME_EXCEEDED:
         case ICMP_PARAMETER_PROBLEM: {
             // ICMP errors are delivered to the appropriate higher layer protocol
-            IPv4Datagram *bogusPacket = check_and_cast<IPv4Datagram *>(packet->getEncapsulatedPacket());
-            int protocol = bogusPacket->getTransportProtocol();
-            int gateindex = mapping.getOutputGateForProtocol(protocol);
-            send(packet, "transportOut", gateindex);
+//            IPv4Datagram *bogusPacket = check_and_cast<IPv4Datagram *>(packet->getEncapsulatedPacket());
+//            int protocol = bogusPacket->getTransportProtocol();
+//            int gateindex = mapping.getOutputGateForProtocol(protocol);
+            send(packet, "transportOut");
             break;
         }
 
         default: {
             // all others are delivered to ICMP: ICMP_ECHO_REQUEST, ICMP_ECHO_REPLY,
             // ICMP_TIMESTAMP_REQUEST, ICMP_TIMESTAMP_REPLY, etc.
-            int gateindex = mapping.getOutputGateForProtocol(IP_PROT_ICMP);
-            send(packet, "transportOut", gateindex);
+//            int gateindex = mapping.getOutputGateForProtocol(IP_PROT_ICMP);
+            send(packet, "transportOut");
             break;
         }
     }
@@ -639,7 +639,7 @@ void IPv4::reassembleAndDeliverFinish(IPv4Datagram *datagram)
         controlInfoCopy->setSocketId(it->second->socketId);
         cPacket *packetCopy = packet->dup();
         packetCopy->setControlInfo(controlInfoCopy);
-        send(packetCopy, "transportOut", 0);
+        send(packetCopy, "transportOut");
     }
     if (protocol == IP_PROT_ICMP) {
         // incoming ICMP packets are handled specially
@@ -651,7 +651,7 @@ void IPv4::reassembleAndDeliverFinish(IPv4Datagram *datagram)
         send(packet, "preRoutingOut");    //FIXME There is no "preRoutingOut" gate in the IPv4 module.
     }
     else {
-        cGate *outGate = gate("transportOut", 0);
+        cGate *outGate = gate("transportOut");
         if (outGate->isPathOK()) {
             send(packet, outGate);
             numLocalDeliver++;

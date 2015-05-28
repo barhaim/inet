@@ -20,6 +20,8 @@ package inet.common;
 
 simple PacketDispatcher
 {
+    parameters:
+        @display("b=100,5,,,,1;");
     gates:
         input upperLayerIn[];
         output upperLayerOut[];
