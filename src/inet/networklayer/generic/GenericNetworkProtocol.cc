@@ -34,7 +34,6 @@ GenericNetworkProtocol::GenericNetworkProtocol() :
         interfaceTable(nullptr),
         routingTable(nullptr),
         arp(nullptr),
-        queueOutBaseGateId(-1),
         defaultHopLimit(-1),
         numLocalDeliver(0),
         numDropped(0),
@@ -59,7 +58,6 @@ void GenericNetworkProtocol::initialize()
     routingTable = getModuleFromPar<GenericRoutingTable>(par("routingTableModule"), this);
     arp = getModuleFromPar<IARP>(par("arpModule"), this);
 
-    queueOutBaseGateId = gateSize("queueOut") == 0 ? -1 : gate("queueOut", 0)->getId();
     defaultHopLimit = par("hopLimit");
     numLocalDeliver = numDropped = numUnroutable = numForwarded = 0;
 
@@ -448,7 +446,11 @@ void GenericNetworkProtocol::sendDatagramToOutput(GenericDatagram *datagram, con
 
     if (!ie->isBroadcast()) {
         EV_DETAIL << "output interface " << ie->getName() << " is not broadcast, skipping ARP\n";
-        send(datagram, queueOutBaseGateId + ie->getNetworkLayerGateIndex());
+        Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
+        controlInfo->setEtherType(ETHERTYPE_INET_GENERIC);
+        controlInfo->setInterfaceId(ie->getInterfaceId());
+        datagram->setControlInfo(controlInfo);
+        send(datagram, "queueOut");
         return;
     }
 
@@ -468,10 +470,11 @@ void GenericNetworkProtocol::sendDatagramToOutput(GenericDatagram *datagram, con
         Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
         controlInfo->setDest(nextHopMAC);
         controlInfo->setEtherType(ETHERTYPE_INET_GENERIC);
+        controlInfo->setInterfaceId(ie->getInterfaceId());
         datagram->setControlInfo(controlInfo);
 
         // send out
-        send(datagram, queueOutBaseGateId + ie->getNetworkLayerGateIndex());
+        send(datagram, "queueOut");
     }
 }
 

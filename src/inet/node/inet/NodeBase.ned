@@ -197,8 +197,8 @@ module NodeBase like INode
             tun[i].upperLayerIn <-- nl.lowerLayerOut++;
         }
 
-        ipv4.ifIn++ <-- nl.upperLayerOut++ if hasIpv4;
-        ipv4.ifOut++ --> nl.upperLayerIn++ if hasIpv4;
+        ipv4.ifIn <-- nl.upperLayerOut++ if hasIpv4;
+        ipv4.ifOut --> nl.upperLayerIn++ if hasIpv4;
 
         ipv4.arpIn <-- nl.upperLayerOut++ if hasIpv4;
         ipv4.arpOut --> nl.upperLayerIn++ if hasIpv4;

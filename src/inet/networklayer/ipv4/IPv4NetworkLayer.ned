@@ -44,8 +44,8 @@ module IPv4NetworkLayer like INetworkLayer
         @display("i=block/fork");
 
     gates:
-        input ifIn[] @labels(INetworkDatagram);
-        output ifOut[] @labels(INetworkDatagram);
+        input ifIn @labels(INetworkDatagram);
+        output ifOut @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
         input igmpIn;
@@ -61,9 +61,6 @@ module IPv4NetworkLayer like INetworkLayer
             parameters:
                 useProxyARP = true; // as routes with unspecified next-hop addr are quite common
                 @display("p=85,95;q=queue");
-            gates:
-                queueIn[sizeof(ifIn)];
-                queueOut[sizeof(ifOut)];
         }
         arp: <arpType> like IARP {
             parameters:
@@ -107,11 +104,7 @@ module IPv4NetworkLayer like INetworkLayer
         igmp.routerOut --> igmpOut;
         igmp.routerIn <-- igmpIn;
 
-        for i=0..sizeof(ifIn)-1 {
-            ip.queueIn[i] <-- { @display("m=s"); } <-- ifIn[i];
-        }
-        for i=0..sizeof(ifOut)-1 {
-            ip.queueOut[i] --> { @display("m=s"); } --> ifOut[i];
-        }
+        ip.queueIn <-- { @display("m=s"); } <-- ifIn;
+        ip.queueOut --> { @display("m=s"); } --> ifOut;
 }
 

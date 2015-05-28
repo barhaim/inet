@@ -47,8 +47,8 @@ module IPv6NetworkLayer like INetworkLayer
         @display("i=block/fork");
 
     gates:
-        input ifIn[] @labels(INetworkDatagram);
-        output ifOut[] @labels(INetworkDatagram);
+        input ifIn @labels(INetworkDatagram);
+        output ifOut @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
 
@@ -57,9 +57,6 @@ module IPv6NetworkLayer like INetworkLayer
         ipv6: IPv6 {
             parameters:
                 @display("p=84,129");
-            gates:
-                queueIn[sizeof(ifIn)];
-                queueOut[sizeof(ifIn)];
         }
         icmpv6: ICMPv6 {
             parameters:
@@ -112,11 +109,7 @@ module IPv6NetworkLayer like INetworkLayer
         ipv6.xMIPv6In <-- mipv6support.toIPv6 if xMIPv6Support;
 
         // IPv6 to L2
-        for i=0..sizeof(ifIn)-1 {
-            ifIn[i] --> { @display("m=s"); } --> ipv6.queueIn[i];
-        }
-        for i=0..sizeof(ifOut)-1 {
-            ipv6.queueOut[i] --> { @display("m=s"); } --> ifOut[i];
-        }
+        ifIn --> { @display("m=s"); } --> ipv6.queueIn;
+        ipv6.queueOut --> { @display("m=s"); } --> ifOut;
 }
 

@@ -104,6 +104,6 @@ simple IPv4
         output transportOut[] @labels(IPv4ControlInfo/up,TCPSegment,UDPPacket);
         input arpIn @labels(ARPPacket+Ieee802Ctrl);
         output arpOut @labels(ARPPacket+Ieee802Ctrl,IPv4Datagram+Ieee802Ctrl);
-        input queueIn[] @labels(IPv4Datagram,ARPPacket,Ieee802Ctrl);
-        output queueOut[] @labels(IPv4Datagram,ARPPacket,Ieee802Ctrl);
+        input queueIn @labels(IPv4Datagram,ARPPacket,Ieee802Ctrl);
+        output queueOut @labels(IPv4Datagram,ARPPacket,Ieee802Ctrl);
 }

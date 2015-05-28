@@ -40,8 +40,8 @@ moduleinterface INetworkLayerLower
     parameters:
         @display("i=block/fork");
     gates:
-        input ifIn[] @labels(INetworkDatagram/up);
-        output ifOut[] @labels(INetworkDatagram/down);
+        input ifIn @labels(INetworkDatagram/up);
+        output ifOut @labels(INetworkDatagram/down);
 }
 
 //

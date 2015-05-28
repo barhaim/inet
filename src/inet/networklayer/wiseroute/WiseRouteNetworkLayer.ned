@@ -33,8 +33,8 @@ module WiseRouteNetworkLayer like INetworkLayer
         @display("i=block/fork");
 
     gates:
-        input ifIn[] @labels(INetworkDatagram);
-        output ifOut[] @labels(INetworkDatagram);
+        input ifIn @labels(INetworkDatagram);
+        output ifOut @labels(INetworkDatagram);
         input transportIn[] @labels(ITransportPacket/down);
         output transportOut[] @labels(ITransportPacket/up);
 
@@ -46,9 +46,6 @@ module WiseRouteNetworkLayer like INetworkLayer
             parameters:
                 arpModule = "^.arp";
                 @display("p=85,95;q=queue");
-            gates:
-                lowerLayerIn[sizeof(ifIn)];
-                lowerLayerOut[sizeof(ifOut)];
         }
         echo: EchoProtocol {
             parameters:
@@ -66,10 +63,6 @@ module WiseRouteNetworkLayer like INetworkLayer
         np.upperLayerOut++ --> echo.localIn;
         np.upperLayerIn++ <-- echo.sendOut;
 
-        for i=0..sizeof(ifIn)-1 {
-            ifIn[i] --> { @display("m=s"); } --> np.lowerLayerIn[i];
-        }
-        for i=0..sizeof(ifOut)-1 {
-            np.lowerLayerOut[i] --> { @display("m=s"); } --> ifOut[i];
-        }
+        ifIn --> { @display("m=s"); } --> np.lowerLayerIn++;
+        np.lowerLayerOut++ --> { @display("m=s"); } --> ifOut;
 }

@@ -76,8 +76,8 @@ simple IPv6
     gates:
         input transportIn[] @labels(IPv6ControlInfo/down,TCPSegment,UDPPacket);
         output transportOut[] @labels(IPv6ControlInfo/up,TCPSegment,UDPPacket);
-        input queueIn[] @labels(IPv6Datagram);
-        output queueOut[] @labels(IPv6Datagram);
+        input queueIn @labels(IPv6Datagram);
+        output queueOut @labels(IPv6Datagram);
         input icmpIn;
         output icmpOut;
         input ndIn;

@@ -93,8 +93,8 @@ module MultiNetworkLayer like INetworkLayer
         generic.routingTableModule = default(absPath(routingTableModule) + ".generic");
 
     gates:
-        input ifIn[] @labels(INetworkDatagram);
-        output ifOut[] @labels(INetworkDatagram);
+        input ifIn @labels(INetworkDatagram);
+        output ifOut @labels(INetworkDatagram);
         input transportIn[] @labels(IPv4ControlInfo/down);
         output transportOut[] @labels(IPv4ControlInfo/up);
 
@@ -138,15 +138,15 @@ module MultiNetworkLayer like INetworkLayer
 
         // interface
         for i=0..sizeof(ifIn)-1 {
-            lowerMultiplexer.ifUpperOut[0+3*i] --> ipv4.ifIn++ if enableIPv4;
-            lowerMultiplexer.ifUpperOut[1+3*i] --> ipv6.ifIn++ if enableIPv6;
-            lowerMultiplexer.ifUpperOut[2+3*i] --> generic.ifIn++ if enableGeneric;
-            ifIn[i] --> { @display("m=s"); } --> lowerMultiplexer.ifLowerIn++;
+            lowerMultiplexer.ifUpperOut[0+3*i] --> ipv4.ifIn if enableIPv4;
+            lowerMultiplexer.ifUpperOut[1+3*i] --> ipv6.ifIn if enableIPv6;
+            lowerMultiplexer.ifUpperOut[2+3*i] --> generic.ifIn if enableGeneric;
+            ifIn --> { @display("m=s"); } --> lowerMultiplexer.ifLowerIn++;
         }
         for i=0..sizeof(ifOut)-1 {
-            ipv4.ifOut++ --> lowerMultiplexer.ifUpperIn[0+3*i] if enableIPv4;
-            ipv6.ifOut++ --> lowerMultiplexer.ifUpperIn[1+3*i] if enableIPv6;
-            generic.ifOut++ --> lowerMultiplexer.ifUpperIn[2+3*i] if enableGeneric;
-            lowerMultiplexer.ifLowerOut++ --> { @display("m=s"); } --> ifOut[i];
+            ipv4.ifOut --> lowerMultiplexer.ifUpperIn[0+3*i] if enableIPv4;
+            ipv6.ifOut --> lowerMultiplexer.ifUpperIn[1+3*i] if enableIPv6;
+            generic.ifOut --> lowerMultiplexer.ifUpperIn[2+3*i] if enableGeneric;
+            lowerMultiplexer.ifLowerOut++ --> { @display("m=s"); } --> ifOut;
         }
 }
