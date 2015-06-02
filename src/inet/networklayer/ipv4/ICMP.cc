@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/Protocol.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo.h"
 #include "inet/networklayer/ipv4/ICMP.h"
@@ -36,7 +37,7 @@ void ICMP::initialize(int stage)
 {
     cSimpleModule::initialize(stage);
     if (stage == INITSTAGE_NETWORK_LAYER_2)
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_ICMP), "ipOut");
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::icmpv4.getId()), "ipOut");
 }
 
 void ICMP::handleMessage(cMessage *msg)

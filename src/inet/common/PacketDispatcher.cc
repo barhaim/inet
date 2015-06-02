@@ -138,7 +138,8 @@ void PacketDispatcher::handleMessage(cMessage *message)
                 protocolIdToLowerLayerGateIndex[registerProtocolCommand->getProtocol()] = message->getArrivalGate()->getIndex();
                 int size = gateSize("upperLayerOut");
                 for (int i = 0; i < size; i++)
-                    send(message->dup(), "upperLayerOut", i);
+                    if (gate("upperLayerOut", i)->isPathOK())
+                        send(message->dup(), "upperLayerOut", i);
                 delete message;
             }
             else if (registerInterfaceCommand != nullptr) {

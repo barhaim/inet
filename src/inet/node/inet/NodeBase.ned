@@ -203,10 +203,10 @@ module NodeBase like INode
         ipv4.arpIn <-- nl.upperLayerOut++ if hasIpv4;
         ipv4.arpOut --> nl.upperLayerIn++ if hasIpv4;
 
-        ipv6.ifIn++ <-- nl.upperLayerOut++ if hasIpv6;
-        ipv6.ifOut++ --> nl.upperLayerIn++ if hasIpv6;
+        ipv6.ifIn <-- nl.upperLayerOut++ if hasIpv6;
+        ipv6.ifOut --> nl.upperLayerIn++ if hasIpv6;
 
-        gn.ifIn++ <-- nl.upperLayerOut++ if hasGn;
-        gn.ifOut++ --> nl.upperLayerIn++ if hasGn;
+        gn.ifIn <-- nl.upperLayerOut++ if hasGn;
+        gn.ifOut --> nl.upperLayerIn++ if hasGn;
 }
 

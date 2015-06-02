@@ -19,6 +19,8 @@
 #define __INET_IPV4CONTROLINFO_H
 
 #include "inet/common/Protocol.h"
+#include "inet/common/ProtocolGroup.h"
+#include "inet/common/IProtocolControlInfo.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
 #include "inet/networklayer/contract/ipv4/IPv4ControlInfo_m.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
@@ -32,7 +34,7 @@ class IPv4Datagram;
  *
  * See the IPv4ControlInfo.msg file for more info.
  */
-class INET_API IPv4ControlInfo : public IPv4ControlInfo_Base, public INetworkProtocolControlInfo
+class INET_API IPv4ControlInfo : public IPv4ControlInfo_Base, public INetworkProtocolControlInfo, public IPacketProtocol, public IControlInfoProtocol
 {
   protected:
     IPv4Datagram *dgram;
@@ -49,6 +51,8 @@ class INET_API IPv4ControlInfo : public IPv4ControlInfo_Base, public INetworkPro
     virtual IPv4ControlInfo *dup() const override { return new IPv4ControlInfo(*this); }
 
     virtual int getNetworkProtocol() const override { return Protocol::ipv4.getId(); }
+    virtual int getControlInfoProtocolId() const override { return Protocol::ipv4.getId(); }
+    virtual int getPacketProtocolId() const override { return ProtocolGroup::ipprotocol.getProtocol(getTransportProtocol())->getId(); }
 
     virtual int getSocketId() const override { return IPv4ControlInfo_Base::getSocketId(); }
     virtual void setSocketId(int id) override { return IPv4ControlInfo_Base::setSocketId(id); }

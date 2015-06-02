@@ -24,10 +24,9 @@ namespace inet {
 int Protocol::nextId = 0;
 std::map<int, const Protocol *> Protocol::idToProtocol;
 
-Protocol::Protocol(const char *name, const char *version) :
+Protocol::Protocol(const char *name) :
     id(nextId++),
-    name(name),
-    version(version)
+    name(name)
 {
     idToProtocol[id] = this;
 }
@@ -47,15 +46,16 @@ const Protocol *Protocol::getProtocol(int id)
         throw cRuntimeError("Unknown protocol id: %d" , id);
 }
 
-const Protocol Protocol::arp("arp", nullptr);
-const Protocol Protocol::ethernet("ethernet", nullptr);
-const Protocol Protocol::icmpv4("icmp", "4");
-const Protocol Protocol::icmpv6("icmp", "6");
-const Protocol Protocol::igmp("igmp", nullptr);
-const Protocol Protocol::ipv4("ip", "4");
-const Protocol Protocol::ipv6("ip", "6");
-const Protocol Protocol::tcp("tcp", nullptr);
-const Protocol Protocol::udp("udp", nullptr);
+const Protocol Protocol::arp("arp");
+const Protocol Protocol::ethernet("ethernet");
+const Protocol Protocol::icmpv4("icmpv4");
+const Protocol Protocol::icmpv6("icmpv6");
+const Protocol Protocol::ieee80211("ieee80211");
+const Protocol Protocol::igmp("igmp");
+const Protocol Protocol::ipv4("ipv4");
+const Protocol Protocol::ipv6("ipv6");
+const Protocol Protocol::tcp("tcp");
+const Protocol Protocol::udp("udp");
 
 } // namespace inet
 

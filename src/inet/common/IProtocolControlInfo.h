@@ -24,28 +24,24 @@ namespace inet {
 
 /**
  * This control info specifies the communication protocol of the packet it is
- * attached to. Call Protocol::findProtocol() or Protocol::getProtocol() to
- * lookup the protocol based on the protocol id.
+ * attached to.
  */
 class INET_API IPacketProtocol
 {
   public:
     virtual ~IPacketProtocol() {}
     virtual int getPacketProtocolId() const = 0;
-    virtual void setPacketProtocolId(int protocolId) = 0;
 };
 
 /**
  * This control info specifies the communication protocol of the control info
- * itself. Call Protocol::findProtocol() or Protocol::getProtocol() to lookup
- * the protocol based on the protocol id.
+ * itself.
  */
 class INET_API IControlInfoProtocol
 {
   public:
     virtual ~IControlInfoProtocol() {}
     virtual int getControlInfoProtocolId() const = 0;
-    virtual void setControlInfoProtocolId(int protocolId) = 0;
 };
 
 } // namespace inet

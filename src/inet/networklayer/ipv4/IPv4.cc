@@ -20,7 +20,7 @@
 #include <string.h>
 
 #include "inet/networklayer/ipv4/IPv4.h"
-
+#include "inet/common/Protocol.h"
 #include "inet/common/ProtocolCommand.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/linklayer/common/SimpleLinkLayerControlInfo.h"
@@ -99,7 +99,7 @@ void IPv4::initialize(int stage)
     }
     else if (stage == INITSTAGE_NETWORK_LAYER) {
         isUp = isNodeUp();
-        RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, ETHERTYPE_IPv4);
+        RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::ipv4.getId());
         send(command->dup(), "transportOut");
         send(command, "queueOut");
     }

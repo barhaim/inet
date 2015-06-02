@@ -20,6 +20,7 @@
 #include <string>
 #include "inet/transportlayer/udp/UDP.h"
 #include "inet/transportlayer/udp/UDPPacket.h"
+#include "inet/common/Protocol.h"
 #include "inet/common/ProtocolCommand.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/networklayer/common/InterfaceEntry.h"
@@ -142,7 +143,7 @@ void UDP::initialize(int stage)
     else if (stage == INITSTAGE_TRANSPORT_LAYER) {
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
-        RegisterProtocolCommand *command = new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_UDP);
+        RegisterProtocolCommand *command = new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, Protocol::udp.getId());
         send(command->dup(), "ipOut");
         send(command, "appOut", 0);
     }

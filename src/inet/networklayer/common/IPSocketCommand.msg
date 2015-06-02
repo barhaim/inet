@@ -17,6 +17,8 @@
 //
 
 cplusplus {{
+#include "inet/common/Protocol.h"
+#include "inet/common/IProtocolControlInfo.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
 #include "inet/applications/contract/ISocketControlInfo.h"
@@ -26,8 +28,9 @@ namespace inet;
 
 class IPSocketCommand
 {
-    @implements(INetworkLayerControlInfo, ISocketControlInfo);
+    @implements(INetworkLayerControlInfo, ISocketControlInfo, IControlInfoProtocol);
     int networkProtocol = ETHERTYPE_IPv4;
+    int controlInfoProtocolId = Protocol::ipv4.getId();
     int socketId;
 }
 

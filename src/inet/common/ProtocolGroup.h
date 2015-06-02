@@ -34,15 +34,15 @@ class INET_API ProtocolGroup
 
     const char *getName() const { return name; }
 
-    const Protocol *findProtocol(int protocolNumber);
-    const Protocol *getProtocol(int protocolNumber);
+    const Protocol *findProtocol(int protocolNumber) const;
+    const Protocol *getProtocol(int protocolNumber) const;
     int findProtocolNumber(const Protocol *protocol);
     int getProtocolNumber(const Protocol *protocol);
 
   public:
     // in alphanumeric order
-    static const ProtocolGroup ethernet;
-    static const ProtocolGroup ip;
+    static const ProtocolGroup ethertype;
+    static const ProtocolGroup ipprotocol;
 };
 
 } // namespace inet

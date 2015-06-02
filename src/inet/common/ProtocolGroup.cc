@@ -25,13 +25,13 @@ ProtocolGroup::ProtocolGroup(const char *name, std::map<int, const Protocol *> p
 {
 }
 
-const Protocol *ProtocolGroup::findProtocol(int protocolNumber)
+const Protocol *ProtocolGroup::findProtocol(int protocolNumber) const
 {
     auto it = protocolNumberToProtocol.find(protocolNumber);
     return it != protocolNumberToProtocol.end() ? it->second : nullptr;
 }
 
-const Protocol *ProtocolGroup::getProtocol(int protocolNumber)
+const Protocol *ProtocolGroup::getProtocol(int protocolNumber) const
 {
     auto protocol = findProtocol(protocolNumber);
     if (protocol != nullptr)
@@ -56,14 +56,14 @@ int ProtocolGroup::getProtocolNumber(const Protocol *protocol)
 }
 
 // excerpt from http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml
-const ProtocolGroup ProtocolGroup::ethernet("ethernet", {
+const ProtocolGroup ProtocolGroup::ethertype("ethertype", {
     { 0x0800, &Protocol::ipv4 },
     { 0x0806, &Protocol::arp},
     { 0x86DD, &Protocol::ipv6 },
 });
 
 // excerpt from http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-const ProtocolGroup ProtocolGroup::ip("ip", {
+const ProtocolGroup ProtocolGroup::ipprotocol("ipprotocol", {
     { 1, &Protocol::icmpv4 },
     { 2, &Protocol::igmp },
     { 4, &Protocol::ipv4 },

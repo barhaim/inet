@@ -31,14 +31,12 @@ class INET_API Protocol
   protected:
     const int id;
     const char *name;
-    const char *version;
 
   public:
-    Protocol(const char *name, const char *version);
+    Protocol(const char *name);
 
     const int getId() const { return id; }
     const char *getName() const { return name; }
-    const char *getVersion() const { return version; }
 
     static const Protocol *findProtocol(int id);
     static const Protocol *getProtocol(int id);
@@ -49,6 +47,7 @@ class INET_API Protocol
     static const Protocol ethernet;
     static const Protocol icmpv4;
     static const Protocol icmpv6;
+    static const Protocol ieee80211;
     static const Protocol igmp;
     static const Protocol ipv4;
     static const Protocol ipv6;
