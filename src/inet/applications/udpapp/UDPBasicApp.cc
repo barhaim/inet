@@ -20,6 +20,7 @@
 
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
 
@@ -124,7 +125,7 @@ void UDPBasicApp::sendPacket()
 
 void UDPBasicApp::processStart()
 {
-    socket.setOutputGate(gate("udpOut"));
+    socket.setOutputGate(gate("socketOut"));
     const char *localAddress = par("localAddress");
     socket.bind(*localAddress ? L3AddressResolver().resolve(localAddress) : L3Address(), localPort);
     setSocketOptions();
@@ -194,6 +195,10 @@ void UDPBasicApp::handleMessageWhenUp(cMessage *msg)
                 throw cRuntimeError("Invalid kind %d in self message", (int)selfMsg->getKind());
         }
     }
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
     else if (msg->getKind() == UDP_I_DATA) {
         // process incoming packet
         processPacket(PK(msg));

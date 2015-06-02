@@ -59,6 +59,8 @@ module Router extends StandardHost
         bool hasRIP = default(false);
         bool hasBGP = default(false);
         bool hasPIM = default(false);
+        bgp.routingTableModule = default(absPath(".ipv4RoutingTable"));
+        ospf.routingTableModule = default(absPath(".ipv4RoutingTable"));
 
     submodules:
         bgp: <"BGPRouting"> like IBGPRouting if hasBGP {

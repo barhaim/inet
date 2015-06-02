@@ -56,105 +56,139 @@ int PacketDispatcher::computeLowerLayerProtocolId(cMessage *message)
 void PacketDispatcher::handleMessage(cMessage *message)
 {
     if (message->arrivedOn("upperLayerIn")) {
-        if (message->isPacket()) {
-            int interfaceId = computeInterfaceId(message);
-            int protocolId = computeLowerLayerProtocolId(message);
-            if (interfaceId != -1) {
-                auto it = interfaceIdToLowerLayerGateIndex.find(interfaceId);
-                if (it != interfaceIdToLowerLayerGateIndex.end())
-                    send(message, "lowerLayerOut", it->second);
-                else
-                    throw cRuntimeError("Unknown interface: id = %d", interfaceId);
-            }
-            else if (protocolId != -1) {
-                auto it = protocolIdToLowerLayerGateIndex.find(protocolId);
-                if (it != protocolIdToLowerLayerGateIndex.end())
-                    send(message, "lowerLayerOut", it->second);
-                else
-                    throw cRuntimeError("Unknown upper layer protocol: %d", protocolId);
-            }
-            else
-                throw cRuntimeError("Unknown packet: %s", message->getName());
-        }
-        else {
-            RegisterProtocolCommand *registerProtocolCommand = dynamic_cast<RegisterProtocolCommand *>(message);
-            if (registerProtocolCommand != nullptr) {
-                protocolIdToUpperLayerGateIndex[registerProtocolCommand->getProtocol()] = message->getArrivalGate()->getIndex();
-                int size = gateSize("lowerLayerOut");
-                for (int i = 0; i < size; i++)
-                    send(message->dup(), "lowerLayerOut", i);
-                delete message;
-            }
-            else {
-                int socketId = computeSocketId(message);
-                int interfaceId = computeInterfaceId(message);
-                int protocolId = computeLowerLayerProtocolId(message);
-                if (socketId != -1)
-                    socketIdToUpperLayerGateIndex[socketId] = message->getArrivalGate()->getIndex();
-                if (interfaceId != -1) {
-                    auto it = interfaceIdToLowerLayerGateIndex.find(interfaceId);
-                    if (it != interfaceIdToLowerLayerGateIndex.end())
-                        send(message, "lowerLayerOut", it->second);
-                    else
-                        throw cRuntimeError("Unknown interface: id = %d", interfaceId);
-                }
-                else if (protocolId != -1) {
-                    auto it = protocolIdToLowerLayerGateIndex.find(protocolId);
-                    if (it != protocolIdToLowerLayerGateIndex.end())
-                        send(message, "lowerLayerOut", it->second);
-                    else
-                        throw cRuntimeError("Unknown lower layer protocol: %d", protocolId);
-                }
-                else
-                    throw cRuntimeError("Unknown message: %s", message->getName());
-            }
-        }
+        if (message->isPacket())
+            handleUpperLayerPacket(message);
+        else
+            handleUpperLayerCommand(message);
     }
     else if (message->arrivedOn("lowerLayerIn")) {
-        if (message->isPacket()) {
-            int socketId = computeSocketId(message);
-            int protocolId = computeUpperLayerProtocolId(message);
-            if (socketId != -1) {
-                auto it = socketIdToUpperLayerGateIndex.find(socketId);
-                if (it != socketIdToUpperLayerGateIndex.end())
-                    send(message, "upperLayerOut", it->second);
-                else
-                    throw cRuntimeError("Unknown socket, id = %d", socketId);
-            }
-            else if (protocolId != -1) {
-                auto it = protocolIdToUpperLayerGateIndex.find(protocolId);
-                if (it != protocolIdToUpperLayerGateIndex.end())
-                    send(message, "upperLayerOut", it->second);
-                else
-                    throw cRuntimeError("Unknown upper layer protocol: %d", protocolId);
-            }
-            else
-                throw cRuntimeError("Unknown packet: %s", message->getName());
-        }
-        else {
-            RegisterProtocolCommand *registerProtocolCommand = dynamic_cast<RegisterProtocolCommand *>(message);
-            RegisterInterfaceCommand *registerInterfaceCommand = dynamic_cast<RegisterInterfaceCommand *>(message);
-            if (registerProtocolCommand != nullptr) {
-                protocolIdToLowerLayerGateIndex[registerProtocolCommand->getProtocol()] = message->getArrivalGate()->getIndex();
-                int size = gateSize("upperLayerOut");
-                for (int i = 0; i < size; i++)
-                    if (gate("upperLayerOut", i)->isPathOK())
-                        send(message->dup(), "upperLayerOut", i);
-                delete message;
-            }
-            else if (registerInterfaceCommand != nullptr) {
-                interfaceIdToLowerLayerGateIndex[registerInterfaceCommand->getInterfaceId()] = message->getArrivalGate()->getIndex();
-                int size = gateSize("upperLayerOut");
-                for (int i = 0; i < size; i++)
-                    send(message->dup(), "upperLayerOut", i);
-                delete message;
-            }
-            else
-                throw cRuntimeError("Unknown message: %s", message->getName());
-        }
+        if (message->isPacket())
+            handleLowerLayerPacket(message);
+        else
+            handleLowerLayerCommand(message);
     }
     else
         throw cRuntimeError("Unknown message: %s", message->getName());
+}
+
+void PacketDispatcher::handleUpperLayerPacket(cMessage *message)
+{
+    int interfaceId = computeInterfaceId(message);
+    int protocolId = computeLowerLayerProtocolId(message);
+    if (interfaceId != -1) {
+        auto it = interfaceIdToLowerLayerGateIndex.find(interfaceId);
+        if (it != interfaceIdToLowerLayerGateIndex.end())
+            send(message, "lowerLayerOut", it->second);
+        else
+            throw cRuntimeError("Unknown interface: id = %d", interfaceId);
+    }
+    else if (protocolId != -1) {
+        auto it = protocolIdToLowerLayerGateIndex.find(protocolId);
+        if (it != protocolIdToLowerLayerGateIndex.end())
+            send(message, "lowerLayerOut", it->second);
+        else
+            throw cRuntimeError("Unknown protocol: id = %d", protocolId);
+    }
+    else
+        throw cRuntimeError("Unknown packet: %s", message->getName());
+}
+
+void PacketDispatcher::handleLowerLayerPacket(cMessage *message)
+{
+    int socketId = computeSocketId(message);
+    int protocolId = computeUpperLayerProtocolId(message);
+    if (socketId != -1) {
+        auto it = socketIdToUpperLayerGateIndex.find(socketId);
+        if (it != socketIdToUpperLayerGateIndex.end())
+            send(message, "upperLayerOut", it->second);
+        else
+            throw cRuntimeError("Unknown socket, id = %d", socketId);
+    }
+    else if (protocolId != -1) {
+        auto it = protocolIdToUpperLayerGateIndex.find(protocolId);
+        if (it != protocolIdToUpperLayerGateIndex.end())
+            send(message, "upperLayerOut", it->second);
+        else
+            throw cRuntimeError("Unknown protocol: id = %d", protocolId);
+    }
+    else
+        throw cRuntimeError("Unknown packet: %s", message->getName());
+}
+
+void PacketDispatcher::handleUpperLayerCommand(cMessage *message)
+{
+    RegisterProtocolCommand *registerProtocolCommand = dynamic_cast<RegisterProtocolCommand *>(message);
+    if (registerProtocolCommand != nullptr) {
+        protocolIdToUpperLayerGateIndex[registerProtocolCommand->getProtocol()] = message->getArrivalGate()->getIndex();
+        int size = gateSize("lowerLayerOut");
+        for (int i = 0; i < size; i++)
+            send(message->dup(), "lowerLayerOut", i);
+        delete message;
+    }
+    else {
+        int socketId = computeSocketId(message);
+        int interfaceId = computeInterfaceId(message);
+        int protocolId = computeLowerLayerProtocolId(message);
+        if (socketId != -1)
+            socketIdToUpperLayerGateIndex[socketId] = message->getArrivalGate()->getIndex();
+        if (interfaceId != -1) {
+            auto it = interfaceIdToLowerLayerGateIndex.find(interfaceId);
+            if (it != interfaceIdToLowerLayerGateIndex.end())
+                send(message, "lowerLayerOut", it->second);
+            else
+                throw cRuntimeError("Unknown interface: id = %d", interfaceId);
+        }
+        else if (protocolId != -1) {
+            auto it = protocolIdToLowerLayerGateIndex.find(protocolId);
+            if (it != protocolIdToLowerLayerGateIndex.end())
+                send(message, "lowerLayerOut", it->second);
+            else
+                throw cRuntimeError("Unknown protocol: id = %d", protocolId);
+        }
+        else
+            throw cRuntimeError("Unknown message: %s", message->getName());
+    }
+}
+
+void PacketDispatcher::handleLowerLayerCommand(cMessage *message)
+{
+    RegisterProtocolCommand *registerProtocolCommand = dynamic_cast<RegisterProtocolCommand *>(message);
+    RegisterInterfaceCommand *registerInterfaceCommand = dynamic_cast<RegisterInterfaceCommand *>(message);
+    if (registerProtocolCommand != nullptr) {
+        protocolIdToLowerLayerGateIndex[registerProtocolCommand->getProtocol()] = message->getArrivalGate()->getIndex();
+        int size = gateSize("upperLayerOut");
+        for (int i = 0; i < size; i++)
+            if (gate("upperLayerOut", i)->isPathOK())
+                send(message->dup(), "upperLayerOut", i);
+        delete message;
+    }
+    else if (registerInterfaceCommand != nullptr) {
+        interfaceIdToLowerLayerGateIndex[registerInterfaceCommand->getInterfaceId()] = message->getArrivalGate()->getIndex();
+        int size = gateSize("upperLayerOut");
+        for (int i = 0; i < size; i++)
+            send(message->dup(), "upperLayerOut", i);
+        delete message;
+    }
+    else {
+        int socketId = computeSocketId(message);
+        int protocolId = computeLowerLayerProtocolId(message);
+        if (socketId != -1) {
+            auto it = socketIdToUpperLayerGateIndex.find(socketId);
+            if (it != socketIdToUpperLayerGateIndex.end())
+                send(message, "upperLayerOut", it->second);
+            else
+                throw cRuntimeError("Unknown socket, id = %d", socketId);
+        }
+        else if (protocolId != -1) {
+            auto it = protocolIdToUpperLayerGateIndex.find(protocolId);
+            if (it != protocolIdToUpperLayerGateIndex.end())
+                send(message, "uppwerLayerOut", it->second);
+            else
+                throw cRuntimeError("Unknown protocol: id = %d", protocolId);
+        }
+        else
+            throw cRuntimeError("Unknown message: %s", message->getName());
+    }
 }
 
 } // namespace inet

@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "inet/common/ProtocolCommand.h"
 #include "inet/routing/ospfv2/messagehandler/MessageHandler.h"
-
 #include "inet/networklayer/ipv4/ICMPMessage.h"
 #include "inet/routing/ospfv2/router/OSPFRouter.h"
 
@@ -39,6 +39,12 @@ void MessageHandler::messageReceived(cMessage *message)
 {
     if (message->isSelfMessage()) {
         handleTimer(message);
+    }
+    else if (dynamic_cast<RegisterProtocolCommand *>(message)) {
+        delete message;
+    }
+    else if (dynamic_cast<RegisterInterfaceCommand *>(message)) {
+        delete message;
     }
     else if (dynamic_cast<ICMPMessage *>(message)) {
         EV_ERROR << "ICMP error received -- discarding\n";

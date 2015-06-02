@@ -18,6 +18,7 @@
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/applications/udpapp/UDPSink.h"
 
+#include "inet/common/ProtocolCommand.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
 
@@ -66,6 +67,10 @@ void UDPSink::handleMessageWhenUp(cMessage *msg)
                 throw cRuntimeError("Invalid kind %d in self message", (int)selfMsg->getKind());
         }
     }
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
     else if (msg->getKind() == UDP_I_DATA) {
         // process incoming packet
         processPacket(PK(msg));
@@ -112,7 +117,7 @@ void UDPSink::setSocketOptions()
 
 void UDPSink::processStart()
 {
-    socket.setOutputGate(gate("udpOut"));
+    socket.setOutputGate(gate("socketOut"));
     socket.bind(localPort);
     setSocketOptions();
 

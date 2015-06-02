@@ -39,6 +39,10 @@ class INET_API PacketDispatcher : public cSimpleModule
 
     protected:
         virtual void handleMessage(cMessage *message) override;
+        virtual void handleUpperLayerPacket(cMessage *message);
+        virtual void handleLowerLayerPacket(cMessage *message);
+        virtual void handleUpperLayerCommand(cMessage *message);
+        virtual void handleLowerLayerCommand(cMessage *message);
 
         virtual int computeSocketId(cMessage *message);
         virtual int computeInterfaceId(cMessage *message);

@@ -45,6 +45,7 @@ class INET_API Protocol
     // in alphanumeric order
     static const Protocol arp;
     static const Protocol aodv;
+    static const Protocol bgp;
     static const Protocol dsr;
     static const Protocol dymo;
     static const Protocol ethernet;
@@ -54,6 +55,7 @@ class INET_API Protocol
     static const Protocol igmp;
     static const Protocol ipv4;
     static const Protocol ipv6;
+    static const Protocol ospf;
     static const Protocol tcp;
     static const Protocol udp;
 };

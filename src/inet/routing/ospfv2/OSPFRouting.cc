@@ -22,12 +22,12 @@
 #include <memory.h>
 
 #include "inet/routing/ospfv2/OSPFRouting.h"
-
 #include "inet/routing/ospfv2/messagehandler/MessageHandler.h"
 #include "inet/routing/ospfv2/OSPFConfigReader.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/common/lifecycle/NodeStatus.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/Protocol.h"
 #include "inet/common/ProtocolCommand.h"
 
 namespace inet {
@@ -52,7 +52,7 @@ void OSPFRouting::initialize(int stage)
     if (stage == INITSTAGE_ROUTING_PROTOCOLS) {
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         rt = getModuleFromPar<IIPv4RoutingTable>(par("routingTableModule"), this);
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_OSPF), "ipOut");
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::ospf.getId()), "ipOut");
         isUp = isNodeUp();
         if (isUp)
             createOspfRouter();

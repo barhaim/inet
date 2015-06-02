@@ -17,6 +17,9 @@
 
 #include <stdio.h>
 
+#include "inet/common/INETUtils.h"
+#include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
 
 #include "inet/linklayer/ethernet/EtherFrame.h"
@@ -47,10 +50,18 @@ void EtherEncap::initialize()
 void EtherEncap::handleMessage(cMessage *msg)
 {
     if (msg->arrivedOn("lowerLayerIn")) {
-        EV_INFO << "Received " << msg << " from lower layer." << endl;
-        processFrameFromMAC(check_and_cast<EtherFrame *>(msg));
+        if (msg->isPacket()) {
+            EV_INFO << "Received " << msg << " from lower layer." << endl;
+            processFrameFromMAC(check_and_cast<EtherFrame *>(msg));
+        }
+        else
+            send(msg, "upperLayerOut");
     }
     else {
+        if (dynamic_cast<RegisterProtocolCommand *>(msg)) {
+            send(msg, "lowerLayerOut");
+            return;
+        }
         EV_INFO << "Received " << msg << " from upper layer." << endl;
         // from higher layer
         switch (msg->getKind()) {
@@ -138,6 +149,9 @@ void EtherEncap::processFrameFromMAC(EtherFrame *frame)
     Ieee802Ctrl *etherctrl = new Ieee802Ctrl();
     etherctrl->setSrc(frame->getSrc());
     etherctrl->setDest(frame->getDest());
+    IInterfaceTable *interfaceTable = findModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
+    InterfaceEntry *myIface = interfaceTable != nullptr ? interfaceTable->getInterfaceByName(utils::stripnonalnum(findModuleUnderContainingNode(this)->getFullName()).c_str()) : nullptr;
+    etherctrl->setInterfaceId(myIface->getInterfaceId());
     if (dynamic_cast<EthernetIIFrame *>(frame) != nullptr)
         etherctrl->setEtherType(((EthernetIIFrame *)frame)->getEtherType());
     else if (dynamic_cast<EtherFrameWithSNAP *>(frame) != nullptr)

@@ -19,6 +19,7 @@
 #include "inet/linklayer/ethernet/EtherMACFullDuplex.h"
 
 #include "inet/common/queue/IPassiveQueue.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/common/NotifierConsts.h"
 #include "inet/common/RawPacket.h"
 #include "inet/common/serializer/SerializerBase.h"
@@ -78,6 +79,8 @@ void EtherMACFullDuplex::handleMessage(cMessage *msg)
 
     if (msg->isSelfMessage())
         handleSelfMessage(msg);
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
     else if (msg->getArrivalGate() == upperLayerInGate)
         processFrameFromUpperLayer(check_and_cast<EtherFrame *>(msg));
     else if (msg->getArrivalGate() == physInGate)

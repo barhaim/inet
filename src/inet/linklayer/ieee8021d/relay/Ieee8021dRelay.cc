@@ -19,6 +19,7 @@
 #include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/networklayer/common/InterfaceEntry.h"
 #include "inet/linklayer/configurator/Ieee8021dInterfaceData.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/common/ModuleAccess.h"
 
 namespace inet {
@@ -86,10 +87,16 @@ void Ieee8021dRelay::handleMessage(cMessage *msg)
         }
         // messages from network
         else if (strcmp(msg->getArrivalGate()->getName(), "ifIn") == 0) {
-            numReceivedNetworkFrames++;
-            EV_INFO << "Received " << msg << " from network." << endl;
-            EtherFrame *frame = check_and_cast<EtherFrame *>(msg);
-            handleAndDispatchFrame(frame);
+            if (msg->isPacket()) {
+                numReceivedNetworkFrames++;
+                EV_INFO << "Received " << msg << " from network." << endl;
+                EtherFrame *frame = check_and_cast<EtherFrame *>(msg);
+                handleAndDispatchFrame(frame);
+            }
+            else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+                delete msg;
+            else
+                throw cRuntimeError("Unknown message");
         }
     }
     else

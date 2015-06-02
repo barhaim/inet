@@ -17,6 +17,8 @@
 
 
 cplusplus {{
+#include "inet/common/Protocol.h"
+#include "inet/common/IProtocolControlInfo.h"
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/networklayer/common/IPProtocolId_m.h"
 #include "inet/transportlayer/contract/ITransportProtocolControlInfo.h"
@@ -92,8 +94,9 @@ enum TCPErrorCode
 //
 class TCPCommand
 {
-    @implements(ITransportLayerControlInfo, ISocketControlInfo);
+    @implements(ITransportLayerControlInfo, ISocketControlInfo, IControlInfoProtocol);
     int transportProtocol = IP_PROT_TCP;
+    int controlInfoProtocolId = Protocol::tcp.getId();
     int socketId = -1;   // identifies the socket within the application
     int userId = -1;   // id than can be freely used by the app
 }

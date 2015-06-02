@@ -59,6 +59,10 @@ void SchedulerBase::finalize()
 
 void SchedulerBase::handleMessage(cMessage *msg)
 {
+    if (!msg->isPacket()) {
+        sendOut(msg);
+        return;
+    }
     ASSERT(packetsRequestedFromUs > 0);
     packetsRequestedFromUs--;
     sendOut(msg);

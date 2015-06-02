@@ -17,6 +17,7 @@
 
 #include "inet/routing/bgpv4/BGPRouting.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/common/lifecycle/NodeStatus.h"
 #include "inet/routing/ospfv2/OSPFRouting.h"
 #include "inet/routing/bgpv4/BGPSession.h"
@@ -68,7 +69,12 @@ void BGPRouting::handleMessage(cMessage *msg)
         handleTimer(msg);
     }
     else if (!strcmp(msg->getArrivalGate()->getName(), "tcpIn")) {    //TCP level
-        processMessageFromTCP(msg);
+        if (dynamic_cast<RegisterProtocolCommand *>(msg))
+            delete msg;
+        else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+            delete msg;
+        else
+            processMessageFromTCP(msg);
     }
     else {
         delete msg;

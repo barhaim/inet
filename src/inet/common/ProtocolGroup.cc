@@ -72,6 +72,7 @@ const ProtocolGroup ProtocolGroup::ipprotocol("ipprotocol", {
     { 41, &Protocol::ipv6 },
     { 48, &Protocol::dsr },
     { 58, &Protocol::icmpv6 },
+    { 89, &Protocol::ospf },
 });
 
 } // namespace inet
