@@ -103,7 +103,7 @@ void MACBase::registerInterface()    //XXX registerInterfaceIfInterfaceTableExis
     if (ift) {
         interfaceEntry = createInterfaceEntry();
         ift->addInterface(interfaceEntry);
-        send(new RegisterInterfaceCommand(interfaceEntry->getInterfaceId()), "netwOut");
+        send(new RegisterInterfaceCommand(interfaceEntry->getInterfaceId()), "upperLayerOut");
     }
 }
 

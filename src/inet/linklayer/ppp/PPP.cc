@@ -317,11 +317,11 @@ void PPP::handleMessage(cMessage *msg)
             numRcvdOK++;
             emit(packetSentToUpperSignal, payload);
             EV_INFO << "Sending " << payload << " to upper layer.\n";
-            send(payload, "netwOut");
+            send(payload, "upperLayerOut");
             delete pppFrame;
         }
     }
-    else {    // arrived on gate "netwIn"
+    else {    // arrived on gate "upperLayerIn"
         EV_INFO << "Received " << msg << " from upper layer.\n";
         if (dynamic_cast<RegisterProtocolCommand *>(msg))
             delete msg;
