@@ -47,6 +47,9 @@ const Protocol *Protocol::getProtocol(int id)
 }
 
 const Protocol Protocol::arp("arp");
+const Protocol Protocol::aodv("aodv");
+const Protocol Protocol::dsr("dsr");
+const Protocol Protocol::dymo("dymo");
 const Protocol Protocol::ethernet("ethernet");
 const Protocol Protocol::icmpv4("icmpv4");
 const Protocol Protocol::icmpv6("icmpv6");

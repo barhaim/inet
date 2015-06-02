@@ -44,6 +44,9 @@ class INET_API Protocol
   public:
     // in alphanumeric order
     static const Protocol arp;
+    static const Protocol aodv;
+    static const Protocol dsr;
+    static const Protocol dymo;
     static const Protocol ethernet;
     static const Protocol icmpv4;
     static const Protocol icmpv6;

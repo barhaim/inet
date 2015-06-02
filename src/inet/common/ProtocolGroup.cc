@@ -70,6 +70,7 @@ const ProtocolGroup ProtocolGroup::ipprotocol("ipprotocol", {
     { 6, &Protocol::tcp },
     { 17, &Protocol::udp },
     { 41, &Protocol::ipv6 },
+    { 48, &Protocol::dsr },
     { 58, &Protocol::icmpv6 },
 });
 

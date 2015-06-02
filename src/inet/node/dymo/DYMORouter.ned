@@ -20,9 +20,9 @@ module DYMORouter extends WirelessHost
         string dymoType = default("DYMO");
     submodules:
         dymo: <dymoType> like IDYMO {
-            @display("p=527,287");
+            @display("p=700,300");
         }
     connections:
-        dymo.ipOut --> networkLayer.transportIn++;
-        dymo.ipIn <-- networkLayer.transportOut++;
+        dymo.ipOut --> tn.upperLayerIn++;
+        dymo.ipIn <-- tn.upperLayerOut++;
 }
