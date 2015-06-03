@@ -120,8 +120,16 @@ void FlatNetworkConfigurator6::configureAdvPrefixes(cTopology& topo)
             ie->ipv6Data()->addAdvPrefix(p);
 
             // add a link-local address (tentative) if it doesn't have one
-            if (ie->ipv6Data()->getLinkLocalAddress().isUnspecified())
-                ie->ipv6Data()->assignAddress(IPv6Address::formLinkLocalAddress(ie->getInterfaceToken()), true, SIMTIME_ZERO, SIMTIME_ZERO);
+            if (ie->ipv6Data()->getLinkLocalAddress().isUnspecified()) {
+                IPv6Address a = IPv6Address::formLinkLocalAddress(ie->getInterfaceToken());
+                ASSERT(!a.isGlobal());
+                ie->ipv6Data()->assignAddress(a, true, SIMTIME_ZERO, SIMTIME_ZERO);
+            }
+            if (!ie->ipv6Data()->getPreferredAddress().isGlobal()) {
+                IPv6Address a(0xaaaa0000 + nodeIndex, ie->getNetworkLayerGateIndex() << 16, ie->getInterfaceModule()->getId(), ie->getInterfaceId());
+                ASSERT(a.isGlobal());
+                ie->ipv6Data()->assignAddress(a, false, SIMTIME_ZERO, SIMTIME_ZERO);
+            }
         }
     }
 }
