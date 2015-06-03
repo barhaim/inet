@@ -27,6 +27,7 @@
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/common/queue/IPassiveQueue.h"
 #include "inet/common/INETUtils.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -213,6 +214,14 @@ void IdealMac::handleLowerPacket(cPacket *msg)
     }
 }
 
+void IdealMac::handleUpperCommand(cMessage *msg)
+{
+    if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else
+        MACProtocolBase::handleUpperCommand(msg);
+}
+
 void IdealMac::handleSelfMessage(cMessage *message)
 {
     if (message == ackTimeoutMsg) {
@@ -254,6 +263,7 @@ IdealMacFrame *IdealMac::encapsulate(cPacket *msg)
     frame->setDest(ctrl->getDest());
     frame->encapsulate(msg);
     frame->setSrcModuleId(getId());
+    frame->setNetworkProtocol(ctrl->getNetworkProtocol());
     delete ctrl;
     return frame;
 }
@@ -289,6 +299,8 @@ cPacket *IdealMac::decapsulate(IdealMacFrame *frame)
     Ieee802Ctrl *etherctrl = new Ieee802Ctrl();
     etherctrl->setSrc(frame->getSrc());
     etherctrl->setDest(frame->getDest());
+    etherctrl->setEtherType(frame->getNetworkProtocol());
+    etherctrl->setInterfaceId(interfaceEntry->getInterfaceId());
     packet->setControlInfo(etherctrl);
 
     delete frame;

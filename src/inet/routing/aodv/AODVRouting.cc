@@ -92,7 +92,7 @@ void AODVRouting::initialize(int stage)
         isOperational = !nodeStatus || nodeStatus->getState() == NodeStatus::UP;
 
         addressType = getSelfIPAddress().getAddressType();
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "ipOut");
+        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::manet.getId()), "ipOut");
         networkProtocol->registerHook(0, this);
         host->subscribe(NF_LINK_BREAK, this);
 
@@ -146,6 +146,10 @@ void AODVRouting::handleMessage(cMessage *msg)
         else
             throw cRuntimeError("Unknown self message");
     }
+    else if (dynamic_cast<RegisterProtocolCommand *>(msg))
+        delete msg;
+    else if (dynamic_cast<RegisterInterfaceCommand *>(msg))
+        delete msg;
     else {
         UDPPacket *udpPacket = check_and_cast<UDPPacket *>(msg);
         AODVControlPacket *ctrlPacket = check_and_cast<AODVControlPacket *>(udpPacket->decapsulate());
