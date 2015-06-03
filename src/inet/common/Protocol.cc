@@ -58,6 +58,7 @@ const Protocol Protocol::ieee80211("ieee80211");
 const Protocol Protocol::igmp("igmp");
 const Protocol Protocol::ipv4("ipv4");
 const Protocol Protocol::ipv6("ipv6");
+const Protocol Protocol::manet("manet");
 const Protocol Protocol::ospf("ospf");
 const Protocol Protocol::tcp("tcp");
 const Protocol Protocol::udp("udp");

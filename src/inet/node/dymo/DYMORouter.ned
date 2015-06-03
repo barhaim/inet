@@ -15,9 +15,11 @@ module DYMORouter extends WirelessHost
 {
     parameters:
         @display("i=device/cellphone");
+        string dymoType = default("DYMO");
         forwarding = true;
         wlan[*].mgmtType = default("Ieee80211MgmtAdhoc");
-        string dymoType = default("DYMO");
+        dymo.routingTableModule = default(absPath(".ipv4RoutingTable"));
+        dymo.networkProtocolModule = default(absPath(".ipv4.ip"));
     submodules:
         dymo: <dymoType> like IDYMO {
             @display("p=700,300");

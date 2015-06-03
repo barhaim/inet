@@ -55,6 +55,7 @@ class INET_API Protocol
     static const Protocol igmp;
     static const Protocol ipv4;
     static const Protocol ipv6;
+    static const Protocol manet;
     static const Protocol ospf;
     static const Protocol tcp;
     static const Protocol udp;

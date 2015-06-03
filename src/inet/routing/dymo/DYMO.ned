@@ -50,7 +50,7 @@ simple DYMO like IDYMO
         // context parameters
         string interfaceTableModule;   // The path to the InterfaceTable module
         string routingTableModule;
-        string networkProtocolModule = default("^.networkLayer.ip");
+        string networkProtocolModule;
 
         // 1. DYMO parameter group
         string clientAddresses = default("10.10.0.0/24 10.20.0.0"); // CLIENT_ADDRESSES
