@@ -18,9 +18,31 @@
 #ifndef __INET_PROTOCOLCOMMAND_H
 #define __INET_PROTOCOLCOMMAND_H
 
+#include "inet/common/Protocol.h"
 #include "inet/common/ProtocolCommand_m.h"
+#include "inet/networklayer/common/InterfaceEntry.h"
 
 namespace inet {
+
+// TODO: base class?
+INET_API void registerProtocol(const Protocol& protocol, cGate *gate);
+
+// TODO: base class?
+INET_API void registerInterface(const InterfaceEntry& interface, cGate *gate);
+
+// TODO: rename?
+class INET_API IProtocolRegistration
+{
+  public:
+    virtual void registerProtocol(const Protocol& protocol, cGate *gate) = 0;
+};
+
+// TODO: rename?
+class INET_API IInterfaceRegistration
+{
+  public:
+    virtual void registerInterface(const InterfaceEntry &interface, cGate *gate) = 0;
+};
 
 class INET_API RegisterProtocolCommand : public RegisterProtocolCommand_Base
 {

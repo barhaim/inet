@@ -94,7 +94,7 @@ void PIMBase::initialize(int stage)
 bool PIMBase::handleNodeStart(IDoneCallback *doneCallback)
 {
     generationID = intrand(UINT32_MAX);
-    send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_PIM), "ipOut");
+    registerProtocol(Protocol::pim, gate("ipOut"));
 
     // to receive PIM messages, join to ALL_PIM_ROUTERS multicast group
     isEnabled = false;

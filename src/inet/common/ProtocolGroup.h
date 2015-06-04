@@ -36,8 +36,8 @@ class INET_API ProtocolGroup
 
     const Protocol *findProtocol(int protocolNumber) const;
     const Protocol *getProtocol(int protocolNumber) const;
-    int findProtocolNumber(const Protocol *protocol);
-    int getProtocolNumber(const Protocol *protocol);
+    int findProtocolNumber(const Protocol *protocol) const;
+    int getProtocolNumber(const Protocol *protocol) const;
 
   public:
     // in alphanumeric order

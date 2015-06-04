@@ -82,7 +82,7 @@ void ARP::initialize(int stage)
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         rt = getModuleFromPar<IIPv4RoutingTable>(par("routingTableModule"), this);
         isUp = isNodeUp();
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::arp.getId()), "ifOut");
+        registerProtocol(Protocol::arp, gate("ifOut"));
     }
 }
 

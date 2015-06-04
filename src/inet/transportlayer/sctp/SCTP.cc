@@ -105,7 +105,7 @@ void SCTP::initialize(int stage)
         }
     }
     else if (stage == INITSTAGE_TRANSPORT_LAYER)
-        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, IP_PROT_SCTP), "to_ip");
+        registerProtocol(Protocol::sctp, gate("to_ip"));
     else if (stage == INITSTAGE_TRANSPORT_LAYER_2) {
         if (par("udpEncapsEnabled").boolValue()) {
             bindPortForUDP();

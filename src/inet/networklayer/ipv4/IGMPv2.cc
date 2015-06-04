@@ -390,7 +390,7 @@ void IGMPv2::initialize(int stage)
         host->subscribe(NF_INTERFACE_CREATED, this);
     }
     else if (stage == INITSTAGE_NETWORK_LAYER_2)
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_IGMP), "ipOut");
+        registerProtocol(Protocol::igmpv2, gate("ipOut"));
 }
 
 IGMPv2::~IGMPv2()

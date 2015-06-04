@@ -18,8 +18,7 @@
 #ifndef __INET_ETHERENCAP_H
 #define __INET_ETHERENCAP_H
 
-#include "inet/common/INETDefs.h"
-
+#include "inet/common/ProtocolCommand.h"
 #include "inet/linklayer/ethernet/Ethernet.h"
 
 namespace inet {
@@ -30,7 +29,7 @@ class EtherFrame;
 /**
  * Performs Ethernet II encapsulation/decapsulation. More info in the NED file.
  */
-class INET_API EtherEncap : public cSimpleModule
+class INET_API EtherEncap : public cSimpleModule, public IInterfaceRegistration
 {
   protected:
     int seqNum;
@@ -53,6 +52,9 @@ class INET_API EtherEncap : public cSimpleModule
     virtual void handleSendPause(cMessage *msg);
 
     virtual void updateDisplayString();
+
+  public:
+    virtual void registerInterface(const InterfaceEntry &interface, cGate *gate);
 };
 
 } // namespace inet

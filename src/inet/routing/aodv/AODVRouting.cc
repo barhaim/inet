@@ -90,9 +90,8 @@ void AODVRouting::initialize(int stage)
     else if (stage == INITSTAGE_ROUTING_PROTOCOLS) {
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(host->getSubmodule("status"));
         isOperational = !nodeStatus || nodeStatus->getState() == NodeStatus::UP;
-
         addressType = getSelfIPAddress().getAddressType();
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::manet.getId()), "ipOut");
+        registerProtocol(Protocol::aodv, gate("ipOut"));
         networkProtocol->registerHook(0, this);
         host->subscribe(NF_LINK_BREAK, this);
 

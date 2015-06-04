@@ -24,6 +24,7 @@
 #include "inet/networklayer/contract/IL3AddressType.h"
 #include "inet/networklayer/contract/INetworkProtocolControlInfo.h"
 #include "inet/common/ProtocolCommand.h"
+#include "inet/common/ProtocolGroup.h"
 
 namespace inet {
 
@@ -64,7 +65,7 @@ void IPvXTrafGen::initialize(int stage)
         WATCH(numReceived);
     }
     else if (stage == INITSTAGE_APPLICATION_LAYER) {
-        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, protocol), "ipOut");
+        registerProtocol(*ProtocolGroup::ipprotocol.getProtocol(protocol), gate("ipOut"));
         timer = new cMessage("sendTimer");
         nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;

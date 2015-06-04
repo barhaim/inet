@@ -40,7 +40,7 @@ void DSDV_2::initialize(int stage)
     }
     else if (stage == INITSTAGE_ROUTING_PROTOCOLS)
     {
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "to_ip");
+        registerProtocol(Protocol::dsdv2, gate("to_ip"));
 
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         /* Search the 80211 interface */

@@ -99,9 +99,8 @@ void IPv4::initialize(int stage)
     }
     else if (stage == INITSTAGE_NETWORK_LAYER) {
         isUp = isNodeUp();
-        RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::ipv4.getId());
-        send(command->dup(), "transportOut");
-        send(command, "queueOut");
+        registerProtocol(Protocol::ipv4, gate("transportOut"));
+        registerProtocol(Protocol::ipv4, gate("queueOut"));
     }
 }
 

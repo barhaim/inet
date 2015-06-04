@@ -272,7 +272,7 @@ void ManetRoutingBase::registerRoutingModule()
     initHook(this);
 
  //   WATCH_MAP(*routesVector);
-    send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "to_ip");
+    registerProtocol(Protocol::manet, gate("to_ip"));
 }
 
 ManetRoutingBase::~ManetRoutingBase()

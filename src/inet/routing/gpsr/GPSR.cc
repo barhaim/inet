@@ -76,7 +76,7 @@ void GPSR::initialize(int stage)
         positionByteLength = par("positionByteLength");
     }
     else if (stage == INITSTAGE_ROUTING_PROTOCOLS) {
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "ipOut");
+        registerProtocol(Protocol::gpsr, gate("ipOut"));
 
         globalPositionTable.clear();
         host->subscribe(NF_LINK_BREAK, this);

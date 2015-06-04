@@ -49,19 +49,28 @@ const Protocol *Protocol::getProtocol(int id)
 const Protocol Protocol::arp("arp");
 const Protocol Protocol::aodv("aodv");
 const Protocol Protocol::bgp("bgp");
+const Protocol Protocol::dsdv2("dsdv2");
 const Protocol Protocol::dsr("dsr");
 const Protocol Protocol::dymo("dymo");
+const Protocol Protocol::egp("egp");
 const Protocol Protocol::ethernet("ethernet");
+const Protocol Protocol::gpsr("gpsr");
 const Protocol Protocol::icmpv4("icmpv4");
 const Protocol Protocol::icmpv6("icmpv6");
 const Protocol Protocol::ieee80211("ieee80211");
-const Protocol Protocol::igmp("igmp");
+const Protocol Protocol::igmpv2("igmpv2");
+const Protocol Protocol::igmpv3("igmpv3");
+const Protocol Protocol::igp("igp");
 const Protocol Protocol::ipv4("ipv4");
 const Protocol Protocol::ipv6("ipv6");
 const Protocol Protocol::manet("manet");
 const Protocol Protocol::ospf("ospf");
+const Protocol Protocol::pim("pim");
+const Protocol Protocol::rsvp("rsvp");
+const Protocol Protocol::sctp("sctp");
 const Protocol Protocol::tcp("tcp");
 const Protocol Protocol::udp("udp");
+const Protocol Protocol::xtp("xtp");
 
 } // namespace inet
 

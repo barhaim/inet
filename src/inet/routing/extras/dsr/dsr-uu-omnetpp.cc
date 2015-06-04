@@ -324,8 +324,7 @@ void DSRUU::initialize(int stage)
     }
     else if (stage == INITSTAGE_ROUTING_PROTOCOLS)
     {
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_MANET), "to_ip");
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_DSR), "to_ip");
+        registerProtocol(Protocol::dsr, gate("to_ip"));
 
         /* Search the 80211 interface */
         inet_rt = getModuleFromPar<IIPv4RoutingTable>(par("routingTableModule"), this);

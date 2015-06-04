@@ -78,7 +78,7 @@ void RSVP::initialize(int stage)
 
         // process traffic configuration
         readTrafficFromXML(par("traffic").xmlValue());
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_RSVP), "ipOut");
+        registerProtocol(Protocol::rsvp, gate("ipOut"));
     }
 }
 
@@ -216,7 +216,7 @@ void RSVP::readTrafficSessionFromXML(const cXMLElement *session)
 
     cXMLElementList list = paths->getChildrenByTagName("path");
     for (auto path : list) {
-        
+
         checkTags(path, "sender lspid bandwidth max_delay route permanent owner color");
 
         int lspid = getParameterIntValue(path, "lspid");

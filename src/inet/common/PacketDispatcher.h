@@ -18,7 +18,7 @@
 #ifndef __INET_PACKETDISPATCHER_H
 #define __INET_PACKETDISPATCHER_H
 
-#include "inet/common/INETDefs.h"
+#include "inet/common/ProtocolCommand.h"
 
 namespace inet {
 
@@ -29,7 +29,7 @@ namespace inet {
  *  - protocols must register by sending a RegisterProtocolCommand
  *  - packets must have a proper control info attached that specifies the protocol
  */
-class INET_API PacketDispatcher : public cSimpleModule
+class INET_API PacketDispatcher : public cSimpleModule, public IProtocolRegistration, public IInterfaceRegistration
 {
     protected:
         std::map<int, int> socketIdToUpperLayerGateIndex;
@@ -51,6 +51,9 @@ class INET_API PacketDispatcher : public cSimpleModule
 
     public:
         PacketDispatcher();
+
+        virtual void registerProtocol(const Protocol& protocol, cGate *gate) override;
+        virtual void registerInterface(const InterfaceEntry &interface, cGate *gate) override;
 };
 
 } // namespace inet

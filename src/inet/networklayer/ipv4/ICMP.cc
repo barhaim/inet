@@ -37,7 +37,7 @@ void ICMP::initialize(int stage)
 {
     cSimpleModule::initialize(stage);
     if (stage == INITSTAGE_NETWORK_LAYER_2)
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::icmpv4.getId()), "ipOut");
+        registerProtocol(Protocol::icmpv4, gate("ipOut"));
 }
 
 void ICMP::handleMessage(cMessage *msg)

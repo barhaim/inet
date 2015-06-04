@@ -46,19 +46,28 @@ class INET_API Protocol
     static const Protocol arp;
     static const Protocol aodv;
     static const Protocol bgp;
+    static const Protocol dsdv2;
     static const Protocol dsr;
     static const Protocol dymo;
+    static const Protocol egp;
     static const Protocol ethernet;
+    static const Protocol gpsr;
     static const Protocol icmpv4;
     static const Protocol icmpv6;
     static const Protocol ieee80211;
-    static const Protocol igmp;
+    static const Protocol igmpv2;
+    static const Protocol igmpv3;
+    static const Protocol igp;
     static const Protocol ipv4;
     static const Protocol ipv6;
     static const Protocol manet;
     static const Protocol ospf;
+    static const Protocol pim;
+    static const Protocol rsvp;
+    static const Protocol sctp;
     static const Protocol tcp;
     static const Protocol udp;
+    static const Protocol xtp;
 };
 
 } // namespace inet

@@ -23,6 +23,7 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/common/ProtocolCommand.h"
+#include "inet/common/ProtocolGroup.h"
 
 namespace inet {
 
@@ -36,11 +37,11 @@ void IPvXTrafSink::initialize(int stage)
 
     if (stage == INITSTAGE_LOCAL) {
         numReceived = 0;
+        int protocol = par("protocol");
+        registerProtocol(*ProtocolGroup::ipprotocol.getProtocol(protocol), gate("ipOut"));
         WATCH(numReceived);
     }
     else if (stage == INITSTAGE_APPLICATION_LAYER) {
-        int protocol = par("protocol");
-        send(new RegisterProtocolCommand(TRANSPORT_LAYER_PROTOCOL, protocol), "ipOut");
         NodeStatus *nodeStatus = dynamic_cast<NodeStatus *>(findContainingNode(this)->getSubmodule("status"));
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
     }

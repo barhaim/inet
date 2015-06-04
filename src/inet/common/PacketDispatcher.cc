@@ -17,7 +17,6 @@
 
 #include "inet/common/IProtocolControlInfo.h"
 #include "inet/common/PacketDispatcher.h"
-#include "inet/common/ProtocolCommand.h"
 #include "inet/applications/contract/ISocketControlInfo.h"
 #include "inet/linklayer/contract/IMACProtocolControlInfo.h"
 
@@ -189,6 +188,38 @@ void PacketDispatcher::handleLowerLayerCommand(cMessage *message)
         else
             throw cRuntimeError("Unknown message: %s", message->getName());
     }
+}
+
+void PacketDispatcher::registerProtocol(const Protocol& protocol, cGate *protocolGate)
+{
+    if (!strcmp("upperLayerIn", protocolGate->getName())) {
+        protocolIdToUpperLayerGateIndex[protocol.getId()] = protocolGate->getIndex();
+        int size = gateSize("lowerLayerOut");
+        for (int i = 0; i < size; i++)
+            inet::registerProtocol(protocol, gate("lowerLayerOut", i));
+    }
+    else if (!strcmp("lowerLayerIn", protocolGate->getName())) {
+        protocolIdToLowerLayerGateIndex[protocol.getId()] = protocolGate->getIndex();
+        int size = gateSize("upperLayerOut");
+        for (int i = 0; i < size; i++)
+            inet::registerProtocol(protocol, gate("upperLayerOut", i));
+    }
+    else
+        throw cRuntimeError("Unknown gate: %s", protocolGate->getName());
+}
+
+void PacketDispatcher::registerInterface(const InterfaceEntry &interface, cGate *interfaceGate)
+{
+    if (!strcmp("upperLayerIn", interfaceGate->getName()))
+        throw cRuntimeError("Invalid gate: %s", interfaceGate->getName());
+    else if (!strcmp("lowerLayerIn", interfaceGate->getName())) {
+        interfaceIdToLowerLayerGateIndex[interface.getInterfaceId()] = interfaceGate->getIndex();
+        int size = gateSize("upperLayerOut");
+        for (int i = 0; i < size; i++)
+            inet::registerInterface(interface, gate("upperLayerOut", i));
+    }
+    else
+        throw cRuntimeError("Unknown gate: %s", interfaceGate->getName());
 }
 
 } // namespace inet

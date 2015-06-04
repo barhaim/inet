@@ -19,7 +19,6 @@
 
 #include "inet/common/INETUtils.h"
 #include "inet/common/ModuleAccess.h"
-#include "inet/common/ProtocolCommand.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
 
 #include "inet/linklayer/ethernet/EtherFrame.h"
@@ -45,6 +44,11 @@ void EtherEncap::initialize()
     WATCH(totalFromHigherLayer);
     WATCH(totalFromMAC);
     WATCH(totalPauseSent);
+}
+
+void EtherEncap::registerInterface(const InterfaceEntry &interface, cGate *)
+{
+    inet::registerInterface(interface, gate("upperLayerOut"));
 }
 
 void EtherEncap::handleMessage(cMessage *msg)

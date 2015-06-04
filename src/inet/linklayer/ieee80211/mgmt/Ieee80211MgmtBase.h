@@ -20,6 +20,7 @@
 
 #include "inet/common/lifecycle/ILifecycle.h"
 #include "inet/common/queue/PassiveQueueBase.h"
+#include "inet/common/ProtocolCommand.h"
 #include "inet/linklayer/common/MACAddress.h"
 #include "inet/linklayer/ieee80211/mac/Ieee80211Frame_m.h"
 #include "inet/linklayer/ieee80211/mgmt/Ieee80211MgmtFrames_m.h"
@@ -36,7 +37,7 @@ namespace ieee80211 {
  *
  * @author Andras Varga
  */
-class INET_API Ieee80211MgmtBase : public PassiveQueueBase, public ILifecycle
+class INET_API Ieee80211MgmtBase : public PassiveQueueBase, public ILifecycle, public IInterfaceRegistration
 {
   protected:
     // configuration
@@ -123,6 +124,7 @@ class INET_API Ieee80211MgmtBase : public PassiveQueueBase, public ILifecycle
 
   public:
     virtual bool handleOperationStage(LifecycleOperation *operation, int stage, IDoneCallback *doneCallback) override;
+    virtual void registerInterface(const InterfaceEntry &interface, cGate *gate) override;
     //@}
 };
 

@@ -52,10 +52,10 @@ void OSPFRouting::initialize(int stage)
     if (stage == INITSTAGE_ROUTING_PROTOCOLS) {
         ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
         rt = getModuleFromPar<IIPv4RoutingTable>(par("routingTableModule"), this);
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, Protocol::ospf.getId()), "ipOut");
         isUp = isNodeUp();
         if (isUp)
             createOspfRouter();
+        registerProtocol(Protocol::ospf, gate("ipOut"));
     }
 }
 

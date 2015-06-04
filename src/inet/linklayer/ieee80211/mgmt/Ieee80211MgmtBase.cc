@@ -16,7 +16,6 @@
 //
 
 #include "inet/common/ModuleAccess.h"
-#include "inet/common/ProtocolCommand.h"
 #include "inet/common/INETUtils.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
 #include "inet/common/lifecycle/NodeOperations.h"
@@ -260,6 +259,11 @@ bool Ieee80211MgmtBase::handleOperationStage(LifecycleOperation *operation, int 
     else
         throw cRuntimeError("Unsupported operation '%s'", operation->getClassName());
     return true;
+}
+
+void Ieee80211MgmtBase::registerInterface(const InterfaceEntry &interface, cGate *)
+{
+    inet::registerInterface(interface, gate("upperLayerOut"));
 }
 
 void Ieee80211MgmtBase::start()

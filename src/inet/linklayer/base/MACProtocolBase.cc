@@ -47,7 +47,7 @@ void MACProtocolBase::registerInterface()
     if (interfaceTable) {
         interfaceEntry = createInterfaceEntry();
         interfaceTable->addInterface(interfaceEntry);
-        send(new RegisterInterfaceCommand(interfaceEntry->getInterfaceId()), "upperLayerOut");
+        inet::registerInterface(*interfaceEntry, gate("upperLayerOut"));
     }
 }
 

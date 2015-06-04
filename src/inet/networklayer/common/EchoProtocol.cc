@@ -28,7 +28,7 @@ void EchoProtocol::initialize(int stage)
 {
     cSimpleModule::initialize(stage);
     if (stage == INITSTAGE_NETWORK_LAYER_2)
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_ICMP), "sendOut");
+        registerProtocol(Protocol::icmpv4, gate("sendOut"));
 }
 
 void EchoProtocol::handleMessage(cMessage *msg)

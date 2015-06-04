@@ -45,7 +45,7 @@ void PIMSplitter::initialize(int stage)
         pimSMOut = gate("pimSMOut");
     }
     else if (stage == INITSTAGE_TRANSPORT_LAYER)
-        send(new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, IP_PROT_PIM), "ipOut");
+        registerProtocol(Protocol::pim, gate("ipOut"));
 }
 
 void PIMSplitter::handleMessage(cMessage *msg)

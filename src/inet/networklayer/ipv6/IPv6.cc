@@ -101,9 +101,8 @@ void IPv6::initialize(int stage)
         isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
         if (!isOperational)
             throw cRuntimeError("This module doesn't support starting in node DOWN state");
-        RegisterProtocolCommand *command = new RegisterProtocolCommand(NETWORK_LAYER_PROTOCOL, ETHERTYPE_IPv6);
-        send(command->dup(), "transportOut", 0);
-        send(command, "queueOut");
+        registerProtocol(Protocol::ipv6, gate("transportOut"));
+        registerProtocol(Protocol::ipv6, gate("queueOut"));
     }
 }
 
